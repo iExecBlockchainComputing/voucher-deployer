@@ -1,0 +1,16 @@
+kind: pipeline
+type: docker
+name: docker dry run
+
+trigger:
+  event:
+    - push
+
+steps:
+  - name: docker publish dry-run
+    image: plugins/docker
+    pull: always
+    settings:
+      repo: pierreiexec/voucher-deployer
+      dockerfile: Dockerfile
+      dry_run: true
