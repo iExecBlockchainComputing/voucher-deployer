@@ -30,7 +30,7 @@ steps:
   - name: set tags
     image: bash
     commands:
-      - echo "latest" > .tags
+      - echo -n "latest," > .tags
       - date -u -Iseconds | sed 's/+00:00//g' | sed 's/:/-/g' >> .tags
 
   - name: docker publish latest
