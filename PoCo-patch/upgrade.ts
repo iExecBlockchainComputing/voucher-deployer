@@ -14,7 +14,7 @@ import {
     IexecOrderManagementDelegate__factory,
     IexecPoco1Delegate__factory,
     IexecPoco2Delegate__factory,
-    IexecPocoBoostAccessorsDelegate__factory,
+    IexecPocoAccessorsDelegate__factory,
     IexecRelayDelegate__factory,
 } from '../typechain';
 const genericFactoryAddress = require('@amxx/factory/deployments/GenericFactory.json').address;
@@ -97,8 +97,8 @@ const main = async () => {
         },
         {
             name: 'IexecAccessorsDelegate',
-            abi: IexecPocoBoostAccessorsDelegate__factory.abi,
-            bytecode: IexecPocoBoostAccessorsDelegate__factory.bytecode,
+            abi: IexecPocoAccessorsDelegate__factory.abi,
+            bytecode: IexecPocoAccessorsDelegate__factory.bytecode,
         },
         {
             name: 'IexecAccessorsABILegacyDelegate',
