@@ -14,3 +14,32 @@ steps:
       repo: pierreiexec/voucher-deployer
       dockerfile: Dockerfile
       dry_run: true
+
+---
+kind: pipeline
+type: docker
+name: docker rebuild latest
+
+trigger:
+  event:
+    - promote
+  target:
+    - latest
+
+steps:
+  - name: set tags
+    image: bash
+    commands:
+      - echo "latest" > .tags
+      - date -u -Iseconds | sed 's/+00:00//g' | sed 's/:/-/g' >> .tags
+
+  - name: docker publish latest
+    image: plugins/docker
+    pull: always
+    settings:
+      repo: pierreiexec/voucher-deployer
+      dockerfile: Dockerfile
+      username:
+        from_secret: docker-user
+      password:
+        from_secret: docker-token
