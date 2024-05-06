@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN git clone https://github.com/iExecBlockchainComputing/iexec-voucher-contracts.git
 RUN git clone https://github.com/iExecBlockchainComputing/PoCo.git
+COPY voucher-subgraph voucher-subgraph
 
 ######
 # prepare iexec-voucher-contracts deployer
@@ -34,6 +35,20 @@ RUN npm run build
 COPY PoCo-patch/ PoCo-patch/
 RUN cat PoCo-patch/hardhat.config-append.ts >> hardhat.config.ts
 RUN cat PoCo-patch/upgrade.ts > scripts/upgrade.ts
+
+######
+# prepare voucher-subgraph deployer
+######
+
+WORKDIR /app/voucher-subgraph
+
+# update abis
+RUN apt update && apt install jq -y && apt clean
+RUN cat ../iexec-voucher-contracts/artifacts/contracts/VoucherHub.sol/VoucherHub.json | jq .abi > ./abis/VoucherHub.json
+RUN cat ../iexec-voucher-contracts/artifacts/contracts/beacon/Voucher.sol/Voucher.json | jq .abi > ./abis/Voucher.json
+RUN cp subgraph.template.yaml subgraph.yaml
+RUN npm ci
+RUN npm run codegen
 
 WORKDIR /app
 

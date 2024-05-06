@@ -1,0 +1,93 @@
+specVersion: 0.0.6
+description: Subgraph for dataProtector smart contract
+
+schema:
+  file: ./schema.graphql
+
+dataSources:
+  - name: VoucherHub
+    kind: ethereum/contract
+    network: bellecour
+    source:
+      #VOUCHER_HUB_ADDRESS#
+      abi: VoucherHub
+      #VOUCHER_HUB_START_BLOCK#
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Account
+        - Voucher
+        - VoucherType
+      abis:
+        - name: VoucherHub
+          file: ./abis/VoucherHub.json
+      eventHandlers:
+        # - event: Approval(indexed address,indexed address,uint256)
+        #   handler: handleApproval
+        # - event: DefaultAdminDelayChangeCanceled()
+        #   handler: handleDefaultAdminDelayChangeCanceled
+        # - event: DefaultAdminDelayChangeScheduled(uint48,uint48)
+        #   handler: handleDefaultAdminDelayChangeScheduled
+        # - event: DefaultAdminTransferCanceled()
+        #   handler: handleDefaultAdminTransferCanceled
+        # - event: DefaultAdminTransferScheduled(indexed address,uint48)
+        #   handler: handleDefaultAdminTransferScheduled
+        - event: EligibleAssetAdded(indexed uint256,address)
+          handler: handleEligibleAssetAdded
+        - event: EligibleAssetRemoved(indexed uint256,address)
+          handler: handleEligibleAssetRemoved
+        # - event: Initialized(uint64)
+        #   handler: handleInitialized
+        # - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        #   handler: handleRoleAdminChanged
+        # - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+        #   handler: handleRoleGranted
+        # - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+        #   handler: handleRoleRevoked
+        # - event: Transfer(indexed address,indexed address,uint256)
+        #   handler: handleTransfer
+        # - event: Upgraded(indexed address)
+        #   handler: handleUpgraded
+        - event: VoucherCreated(indexed address,address,uint256,uint256,uint256)
+          handler: handleVoucherCreated
+        - event: VoucherDebited(indexed address,uint256)
+          handler: handleVoucherDebited
+        - event: VoucherTypeCreated(indexed uint256,string,uint256)
+          handler: handleVoucherTypeCreated
+        - event: VoucherTypeDescriptionUpdated(indexed uint256,string)
+          handler: handleVoucherTypeDescriptionUpdated
+        - event: VoucherTypeDurationUpdated(indexed uint256,uint256)
+          handler: handleVoucherTypeDurationUpdated
+      file: ./src/voucherHub.ts
+
+templates:
+  - kind: ethereum
+    name: Voucher
+    network: bellecour
+    source:
+      abi: Voucher
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Account
+        - Voucher
+        - VoucherType
+      abis:
+        - name: Voucher
+          file: ./abis/Voucher.json
+      eventHandlers:
+        - event: AccountAuthorized(indexed address)
+          handler: handleAccountAuthorized
+        - event: AccountUnauthorized(indexed address)
+          handler: handleAccountUnauthorized
+        # - event: Initialized(uint64)
+        #   handler: handleInitialized
+        - event: OrdersMatchedWithVoucher(bytes32)
+          handler: handleOrdersMatchedWithVoucher
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: ./src/voucher.ts

@@ -1,0 +1,10 @@
+{
+  "name": "voucher-deployer",
+  "type": "module",
+  "description": "This project allow deploying iExec voucher related contracts and associated subgraph on a bellecour forked test chain (anvil).",
+  "scripts": {
+    "test": "npm run start-test-stack && docker logs -f test-voucher-deployer-1",
+    "stop-test-stack": "cd test && docker compose down --remove-orphans --volumes",
+    "start-test-stack": "cd test && npm run stop-test-stack && node prepare-test-env.js && docker compose up -d"
+  }
+}
