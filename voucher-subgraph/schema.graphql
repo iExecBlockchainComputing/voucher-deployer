@@ -4,17 +4,25 @@ type Account @entity {
   authorizedVouchers: [Voucher!]! @derivedFrom(field: "authorizedAccounts")
 }
 
+type Asset @entity {
+  id: ID!
+  voucherTypes: [VoucherType!]! @derivedFrom(field: "eligibleAssets")
+}
+
 type VoucherType @entity {
   id: ID!
   description: String!
   duration: BigInt!
+  eligibleAssets: [Asset!]!
+  vouchers: [Voucher!]! @derivedFrom(field: "voucherType")
 }
 
 type Voucher @entity {
   id: ID!
   owner: Account!
+  expiration: BigInt!
+  voucherType: VoucherType!
+  value: BigInt!
   balance: BigInt!
-  expirationTimestamp: BigInt!
-  type: VoucherType!
   authorizedAccounts: [Account!]!
 }
