@@ -31,6 +31,13 @@ docker run --rm \
   voucher-deployer
 ```
 
+Output:
+
+- `iexec-voucher-contracts.git-log`: git logs iexec-voucher-contracts
+- `PoCo.git-log`: git logs PoCo
+- `VoucherHub.address`: address of the deployed VoucherHub contract
+- `VoucherHub.block`: block number of VoucherHub contract deployment
+
 ## Test
 
 ```sh
