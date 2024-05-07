@@ -18,6 +18,7 @@ npx hardhat run scripts/upgrade.ts --network bellecour-fork
 
 # deploy subgraph
 echo "deploying iexec-voucher-contracts subgraph"
+cd /app/voucher-subgraph
 export VOUCHER_HUB_ADDRESS=$(cat /app/out/VoucherHub.address)
 export VOUCHER_HUB_START_BLOCK=$(cat /app/out/VoucherHub.block)
 npm run codegen
