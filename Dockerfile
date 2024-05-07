@@ -1,4 +1,7 @@
-FROM node:18.19
+FROM node:18.20-alpine
+
+# install deps
+RUN apk --no-cache add git jq
 
 WORKDIR /app
 
@@ -43,7 +46,6 @@ RUN cat PoCo-patch/upgrade.ts > scripts/upgrade.ts
 WORKDIR /app/voucher-subgraph
 
 # update abis
-RUN apt update && apt install jq -y && apt clean
 RUN cat ../iexec-voucher-contracts/artifacts/contracts/VoucherHub.sol/VoucherHub.json | jq .abi > ./abis/VoucherHub.json
 RUN cat ../iexec-voucher-contracts/artifacts/contracts/beacon/Voucher.sol/Voucher.json | jq .abi > ./abis/Voucher.json
 RUN cp subgraph.template.yaml subgraph.yaml
@@ -52,6 +54,9 @@ RUN npm run codegen
 
 WORKDIR /app
 
+# cleanup unnecessary deps
+RUN apk del jq
+
 COPY entrypoint.sh entrypoint.sh
 
-ENTRYPOINT [ "bash", "entrypoint.sh" ]
+ENTRYPOINT [ "sh", "entrypoint.sh" ]
