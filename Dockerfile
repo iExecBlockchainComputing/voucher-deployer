@@ -52,7 +52,6 @@ WORKDIR /app/voucher-subgraph
 
 # update abis
 RUN cp -r /app/iexec-voucher-contracts/abis/ ./abis/
-RUN cp subgraph.template.yaml subgraph.yaml
 RUN npm ci
 RUN npm run codegen
 
