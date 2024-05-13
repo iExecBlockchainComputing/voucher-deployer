@@ -11,6 +11,8 @@ npx hardhat run deploy/deploy.ts --network bellecour-fork
 cp /app/iexec-voucher-contracts/VoucherHub.address /app/out/
 cp /app/iexec-voucher-contracts/VoucherHub.block /app/out/
 
+cp -r /app/iexec-voucher-contracts/abis/ /app/out/
+
 # upgrade poco
 echo -e "\n##########################\n# deploying PoCo upgrade #\n##########################\n"
 

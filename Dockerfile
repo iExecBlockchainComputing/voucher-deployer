@@ -24,6 +24,11 @@ COPY iexec-voucher-contracts-patch/ iexec-voucher-contracts-patch/
 RUN cat iexec-voucher-contracts-patch/hardhat.config-append.ts >> hardhat.config.ts
 RUN cat iexec-voucher-contracts-patch/deploy.ts > deploy/deploy.ts
 
+# extract abis
+RUN mkdir abis
+RUN cat artifacts/contracts/VoucherHub.sol/VoucherHub.json | jq .abi > ./abis/VoucherHub.json
+RUN cat artifacts/contracts/beacon/Voucher.sol/Voucher.json | jq .abi > ./abis/Voucher.json
+
 ######
 # prepare PoCo upgrade deployer
 ######
@@ -46,8 +51,7 @@ RUN cat PoCo-patch/upgrade.ts > scripts/upgrade.ts
 WORKDIR /app/voucher-subgraph
 
 # update abis
-RUN cat ../iexec-voucher-contracts/artifacts/contracts/VoucherHub.sol/VoucherHub.json | jq .abi > ./abis/VoucherHub.json
-RUN cat ../iexec-voucher-contracts/artifacts/contracts/beacon/Voucher.sol/Voucher.json | jq .abi > ./abis/Voucher.json
+RUN cp -r /app/iexec-voucher-contracts/abis/ ./abis/
 RUN cp subgraph.template.yaml subgraph.yaml
 RUN npm ci
 RUN npm run codegen
