@@ -1,6 +1,6 @@
 type Account @entity {
   id: ID!
-  vouchers: [Voucher!]! @derivedFrom(field: "owner")
+  voucher: Voucher @derivedFrom(field: "owner")
   authorizedVouchers: [Voucher!]! @derivedFrom(field: "authorizedAccounts")
 }
 
