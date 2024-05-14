@@ -1,0 +1,18 @@
+# Ignore everything
+
+*
+
+# Allow files and directories
+
+!/iexec-voucher-contracts-patch
+
+!/PoCo-patch
+
+!/voucher-subgraph
+/voucher-subgraph/build
+/voucher-subgraph/generated
+/voucher-subgraph/iexec-voucher-contracts
+/voucher-subgraph/node_modules
+/voucher-subgraph/subgraph.yaml
+
+!/entrypoint.sh
