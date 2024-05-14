@@ -48,6 +48,19 @@ this will start a local docker `bellecour-fork`, a `graphnode` and `ipfs` and ru
 
 once finished, the VoucherHub is deployed on `bellecour-fork` at address in `./test/out/VoucherHub.address` and indexed by the subgraph at <http://localhost:8000/subgraphs/bellecour/iexec-voucher/graphql>.
 
+you can interact with the deployed `VoucherHub` using scripts in `test/test-scripts`.
+
+```sh
+# install deps
+cd test/test-scripts
+npm ci
+# interact
+node createVoucherType.js
+node addEligibleAsset.js
+node createVoucher.js
+# ...
+```
+
 terminate the local environment by running
 
 ```sh

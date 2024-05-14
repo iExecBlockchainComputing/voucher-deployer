@@ -5,7 +5,8 @@ mkdir /app/out
 echo -e "\n#####################################\n# deploying iexec-voucher-contracts #\n#####################################\n"
 
 cd /app/iexec-voucher-contracts
-git log -1 > /app/out/iexec-voucher-contracts.git-log
+cat .git-log
+cp .git-log /app/out/iexec-voucher-contracts.git-log
 npx hardhat run deploy/deploy.ts --network bellecour-fork
 
 cp /app/iexec-voucher-contracts/VoucherHub.address /app/out/
@@ -17,7 +18,8 @@ cp -r /app/iexec-voucher-contracts/abis/ /app/out/
 echo -e "\n##########################\n# deploying PoCo upgrade #\n##########################\n"
 
 cd /app/PoCo
-git log -1 > /app/out/PoCo.git-log
+cat .git-log
+cp .git-log /app/out/PoCo.git-log
 npx hardhat run scripts/upgrade.ts --network bellecour-fork
 
 # deploy subgraph
