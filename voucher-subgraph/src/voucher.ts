@@ -46,14 +46,3 @@ export function handleOrdersMatchedWithVoucher(
 ): void {
   // TODO
 }
-
-export function handleOwnershipTransferred(event: OwnershipTransferred): void {
-  let voucherId = event.address.toHex();
-  let newOwnerId = event.params.newOwner.toHex();
-  let voucher = Voucher.load(voucherId);
-  if (voucher) {
-    loadOrCreateAccount(newOwnerId);
-    voucher.owner = newOwnerId;
-    voucher.save();
-  }
-}

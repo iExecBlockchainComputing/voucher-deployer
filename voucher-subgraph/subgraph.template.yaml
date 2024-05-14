@@ -89,6 +89,4 @@ templates:
         #   handler: handleInitialized
         - event: OrdersMatchedWithVoucher(bytes32)
           handler: handleOrdersMatchedWithVoucher
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
       file: ./src/voucher.ts
