@@ -18,9 +18,9 @@ Prerequisites:
 
 Environments:
 
-- RPC_URL: `bellecour-fork` RPC url
-- GRAPHNODE_URL: `graphnode` admin url
-- IPFS_URL: `ipfs` admin url
+- `RPC_URL`: `bellecour-fork` RPC url
+- `GRAPHNODE_URL`: `graphnode` admin url
+- `IPFS_URL`: `ipfs` admin url
 
 ```sh
 docker run --rm \
@@ -41,5 +41,15 @@ Output:
 ## Test
 
 ```sh
-docker compose -f docker-compose.test.yml up
+npm run test
+```
+
+this will start a local docker `bellecour-fork`, a `graphnode` and `ipfs` and run the `voucher-deployer`
+
+once finished, the VoucherHub is deployed on `bellecour-fork` at address in `./test/out/VoucherHub.address` and indexed by the subgraph at <http://localhost:8000/subgraphs/bellecour/iexec-voucher/graphql>.
+
+terminate the local environment by running
+
+```sh
+npm run stop-test-stack
 ```
