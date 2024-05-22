@@ -3,10 +3,15 @@ import {
   EligibleAssetRemoved,
   VoucherCreated,
   VoucherDebited,
+  VoucherHub,
   VoucherTypeCreated,
   VoucherTypeDescriptionUpdated,
   VoucherTypeDurationUpdated,
 } from "../generated/VoucherHub/VoucherHub";
+import { PoCo } from "../generated/VoucherHub/PoCo";
+import { AppRegistry } from "../generated/VoucherHub/AppRegistry";
+import { DatasetRegistry } from "../generated/VoucherHub/DatasetRegistry";
+import { WorkerpoolRegistry } from "../generated/VoucherHub/WorkerpoolRegistry";
 import { Voucher, VoucherType } from "../generated/schema";
 import { Voucher as VoucherTemplate } from "../generated/templates";
 import {
@@ -17,8 +22,32 @@ import {
 
 export function handleEligibleAssetAdded(event: EligibleAssetAdded): void {
   let voucherTypeId = event.params.id.toString();
-  let addedAssetId = event.params.asset.toHex();
-  loadOrCreateAsset(addedAssetId);
+  let addedAssetAddress = event.params.asset;
+  let addedAssetId = addedAssetAddress.toHex();
+
+  let asset = loadOrCreateAsset(addedAssetId);
+  // check asset type
+  let voucherHubContract = VoucherHub.bind(event.address);
+  let pocoContract = PoCo.bind(voucherHubContract.getIexecPoco());
+  if (
+    AppRegistry.bind(pocoContract.appregistry()).isRegistered(addedAssetAddress)
+  ) {
+    asset.type = "app";
+  } else if (
+    DatasetRegistry.bind(pocoContract.datasetregistry()).isRegistered(
+      addedAssetAddress
+    )
+  ) {
+    asset.type = "dataset";
+  } else if (
+    WorkerpoolRegistry.bind(pocoContract.workerpoolregistry()).isRegistered(
+      addedAssetAddress
+    )
+  ) {
+    asset.type = "workerpool";
+  }
+  asset.save();
+
   let voucherType = loadOrCreateVoucherType(voucherTypeId);
   let eligibleAssets = voucherType.eligibleAssets;
   let existingEntry = eligibleAssets.indexOf(addedAssetId);
