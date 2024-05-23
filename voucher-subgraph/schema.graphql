@@ -3,9 +3,16 @@ type Account @entity {
   voucher: Voucher @derivedFrom(field: "owner")
 }
 
+enum AssetType {
+  app
+  dataset
+  workerpool
+}
+
 type Asset @entity {
   id: ID!
   voucherTypes: [VoucherType!]! @derivedFrom(field: "eligibleAssets")
+  type: AssetType
 }
 
 type VoucherType @entity {

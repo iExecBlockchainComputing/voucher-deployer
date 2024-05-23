@@ -24,6 +24,14 @@ dataSources:
       abis:
         - name: VoucherHub
           file: ./abis/VoucherHub.json
+        - name: PoCo
+          file: node_modules/@iexec/poco/build/contracts/IexecInterfaceNative.json
+        - name: AppRegistry
+          file: node_modules/@iexec/poco/build/contracts/AppRegistry.json
+        - name: DatasetRegistry
+          file: node_modules/@iexec/poco/build/contracts/DatasetRegistry.json
+        - name: WorkerpoolRegistry
+          file: node_modules/@iexec/poco/build/contracts/WorkerpoolRegistry.json
       eventHandlers:
         - event: EligibleAssetAdded(indexed uint256,address)
           handler: handleEligibleAssetAdded
