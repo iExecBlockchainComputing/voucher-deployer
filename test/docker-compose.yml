@@ -93,6 +93,7 @@ services:
       RPC_URL: http://bellecour-fork:8545
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
+      SKIP_SUBGRAPH: $SKIP_SUBGRAPH
     volumes:
       - ./out:/app/out
     depends_on:
