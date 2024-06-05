@@ -24,10 +24,15 @@ npx hardhat run scripts/upgrade.ts --network bellecour-fork
 
 # deploy subgraph
 echo -e "\n##############################################\n# deploying iexec-voucher-contracts subgraph #\n##############################################\n"
+if [ "$SKIP_SUBGRAPH" == "true" ]
+then
+    echo -e "SKIP_SUBGRAPH == true\n  => skiping subgraph deployment"
+else
 
-cd /app/voucher-subgraph
-export VOUCHER_HUB_ADDRESS=$(cat /app/out/VoucherHub.address)
-export VOUCHER_HUB_START_BLOCK=$(cat /app/out/VoucherHub.block)
-npm run codegen
-npm run create
-npm run deploy
+    cd /app/voucher-subgraph
+    export VOUCHER_HUB_ADDRESS=$(cat /app/out/VoucherHub.address)
+    export VOUCHER_HUB_START_BLOCK=$(cat /app/out/VoucherHub.block)
+    npm run codegen
+    npm run create
+    npm run deploy
+fi

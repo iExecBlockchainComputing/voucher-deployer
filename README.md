@@ -19,6 +19,7 @@ Prerequisites:
 Environments:
 
 - `RPC_URL`: `bellecour-fork` RPC url
+- `SKIP_SUBGRAPH`: boolean set it to `true` to disable the subgraph deployment (default `false`)
 - `GRAPHNODE_URL`: `graphnode` admin url
 - `IPFS_URL`: `ipfs` admin url
 

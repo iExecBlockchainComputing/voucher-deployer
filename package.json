@@ -5,6 +5,6 @@
   "scripts": {
     "test": "npm run start-test-stack && docker logs -f test-voucher-deployer-1",
     "stop-test-stack": "cd test && docker compose down --remove-orphans --volumes",
-    "start-test-stack": "cd test && npm run stop-test-stack && node prepare-test-env.js && docker compose up -d"
+    "start-test-stack": "cd test && npm run stop-test-stack && node prepare-test-env.js && docker compose build && docker compose up -d"
   }
 }
