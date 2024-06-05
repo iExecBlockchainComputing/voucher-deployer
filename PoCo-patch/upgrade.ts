@@ -55,7 +55,7 @@ const getPocoOwnership = async (target: string) => {
   await fetch(rpcURL, {
     method: "POST",
     body: JSON.stringify({
-      method: "anvil_impersonateAccount",
+      method: "hardhat_impersonateAccount", // supported by hardhat and anvil
       params: [iexecOwner],
       id: 1,
       jsonrpc: "2.0",
@@ -69,6 +69,20 @@ const getPocoOwnership = async (target: string) => {
     .connect(ownerSigner)
     .transferOwnership(target, { gasPrice: 0 });
   await tx.wait();
+
+  await fetch(rpcURL, {
+    method: "POST",
+    body: JSON.stringify({
+      method: "hardhat_stopImpersonatingAccount", // supported by hardhat and anvil
+      params: [iexecOwner],
+      id: 1,
+      jsonrpc: "2.0",
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  console.log("PoCo transferred");
 };
 
 const main = async () => {
