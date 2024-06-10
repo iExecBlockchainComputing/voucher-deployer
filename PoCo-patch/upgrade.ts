@@ -4,6 +4,7 @@ import {
   ENSIntegrationDelegate__factory,
   ERC1538UpdateDelegate__factory,
   GenericFactory__factory,
+  IexecAccessorsDelegate__factory,
   IexecAccessorsABILegacyDelegate__factory,
   IexecCategoryManagerDelegate__factory,
   IexecERC20Delegate__factory,
@@ -93,6 +94,31 @@ const main = async () => {
   console.log("Deploying modules...");
   const modules = [
     {
+      name: "IexecAccessorsDelegate",
+      abi: IexecAccessorsDelegate__factory.abi,
+      bytecode: IexecAccessorsDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecAccessorsABILegacyDelegate",
+      abi: IexecAccessorsABILegacyDelegate__factory.abi,
+      bytecode: IexecAccessorsABILegacyDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecCategoryManagerDelegate",
+      abi: IexecCategoryManagerDelegate__factory.abi,
+      bytecode: IexecCategoryManagerDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecERC20Delegate",
+      abi: IexecERC20Delegate__factory.abi,
+      bytecode: IexecERC20Delegate__factory.bytecode,
+    },
+    {
+      name: "IexecEscrowNativeDelegate",
+      abi: IexecEscrowNativeDelegate__factory.abi,
+      bytecode: IexecEscrowNativeDelegate__factory.bytecode,
+    },
+    {
       name: "IexecMaintenanceDelegate",
       abi: IexecMaintenanceDelegate__factory.abi,
       bytecode: IexecMaintenanceDelegate__factory.linkBytecode({
@@ -117,39 +143,6 @@ const main = async () => {
       }),
     },
     {
-      name: "IexecAccessorsDelegate",
-      abi: IexecPocoAccessorsDelegate__factory.abi,
-      bytecode: IexecPocoAccessorsDelegate__factory.linkBytecode({
-        ["contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5"]:
-          deploymentOptions.IexecLibOrders_v5,
-      }),
-    },
-    {
-      name: "IexecAccessorsABILegacyDelegate",
-      abi: IexecAccessorsABILegacyDelegate__factory.abi,
-      bytecode: IexecAccessorsABILegacyDelegate__factory.bytecode,
-    },
-    {
-      name: "IexecCategoryManagerDelegate",
-      abi: IexecCategoryManagerDelegate__factory.abi,
-      bytecode: IexecCategoryManagerDelegate__factory.bytecode,
-    },
-    {
-      name: "IexecERC20Delegate",
-      abi: IexecERC20Delegate__factory.abi,
-      bytecode: IexecERC20Delegate__factory.bytecode,
-    },
-    {
-      name: "IexecEscrowNativeDelegate",
-      abi: IexecEscrowNativeDelegate__factory.abi,
-      bytecode: IexecEscrowNativeDelegate__factory.bytecode,
-    },
-    {
-      name: "IexecMaintenanceExtraDelegate",
-      abi: IexecMaintenanceExtraDelegate__factory.abi,
-      bytecode: IexecMaintenanceExtraDelegate__factory.bytecode,
-    },
-    {
       name: "IexecPoco2Delegate",
       abi: IexecPoco2Delegate__factory.abi,
       bytecode: IexecPoco2Delegate__factory.bytecode,
@@ -164,6 +157,21 @@ const main = async () => {
       abi: ENSIntegrationDelegate__factory.abi,
       bytecode: ENSIntegrationDelegate__factory.bytecode,
     },
+    {
+      name: "IexecMaintenanceExtraDelegate",
+      abi: IexecMaintenanceExtraDelegate__factory.abi,
+      bytecode: IexecMaintenanceExtraDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecPocoAccessorsDelegate",
+      abi: IexecPocoAccessorsDelegate__factory.abi,
+      bytecode: IexecPocoAccessorsDelegate__factory.linkBytecode({
+        ["contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5"]:
+          deploymentOptions.IexecLibOrders_v5,
+      }),
+    },
+    // IexecPocoBoostDelegate out of scope
+    // IexecPocoBoostAccessorsDelegate out of scope
   ];
 
   const genericFactoryInstance = GenericFactory__factory.connect(
