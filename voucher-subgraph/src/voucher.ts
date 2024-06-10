@@ -3,7 +3,6 @@ import {
   AccountAuthorized,
   AccountUnauthorized,
   OrdersMatchedWithVoucher,
-  OwnershipTransferred,
 } from "../generated/templates/Voucher/Voucher";
 import { loadOrCreateAccount } from "./utils";
 
