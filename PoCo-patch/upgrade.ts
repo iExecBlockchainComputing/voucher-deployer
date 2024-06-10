@@ -1,5 +1,6 @@
 import hre, { ethers } from "hardhat";
 import CONFIG from "../config/config.json";
+import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures";
 import {
   ERC1538Query__factory,
   ERC1538QueryDelegate__factory,
@@ -214,21 +215,6 @@ const main = async () => {
     console.log(`${module.name} deployed at ${moduleAddress}`);
 
     // Link modules into the factory
-    const signatures: string[] = [];
-    const moduleFactory = new ethers.ContractFactory(
-      module.abi,
-      module.bytecode,
-      owner
-    );
-    moduleFactory.interface.fragments.forEach((fragment) => {
-      if (fragment.type === "function") {
-        signatures.push(fragment.format(ethers.utils.FormatTypes.full));
-      }
-    });
-
-    // Join all signatures with semicolons
-    const functionSignatures = signatures.join(";");
-
     const proxy = ERC1538UpdateDelegate__factory.connect(
       IEXEC_HUB_ADDRESS,
       owner
@@ -236,7 +222,7 @@ const main = async () => {
     const tx = await proxy
       .updateContract(
         moduleAddress,
-        functionSignatures,
+        getFunctionSignatures(module.abi),
         "Linking " + module.name
       )
       .catch((e: any) => {
