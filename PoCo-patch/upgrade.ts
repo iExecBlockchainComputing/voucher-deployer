@@ -1,6 +1,7 @@
 import hre, { ethers } from "hardhat";
 import CONFIG from "../config/config.json";
 import {
+  ERC1538Query__factory,
   ERC1538QueryDelegate__factory,
   ENSIntegrationDelegate__factory,
   ERC1538UpdateDelegate__factory,
@@ -210,7 +211,7 @@ const main = async () => {
     await genericFactoryInstance
       .createContract(module.bytecode, salt)
       .then((tx) => tx.wait());
-    console.log(`${module.name} deployed`);
+    console.log(`${module.name} deployed at ${moduleAddress}`);
 
     // Link modules into the factory
     const signatures: string[] = [];
@@ -245,6 +246,19 @@ const main = async () => {
     await tx.wait();
 
     console.log(`Link ${module.name} to proxy`);
+  }
+
+  const erc1538QueryInstance = ERC1538Query__factory.connect(
+    IEXEC_HUB_ADDRESS,
+    owner
+  );
+  const functionCount = await erc1538QueryInstance.totalFunctions();
+  console.log(
+    `The deployed ERC1538Proxy now supports ${functionCount} functions:`
+  );
+  for (let i = 0; i < functionCount.toNumber(); i++) {
+    const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
+    console.log(`[${i}] ${contract} ${method}`);
   }
 };
 
