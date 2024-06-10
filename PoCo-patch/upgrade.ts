@@ -1,6 +1,7 @@
 import hre, { ethers } from "hardhat";
 import CONFIG from "../config/config.json";
 import {
+  ERC1538QueryDelegate__factory,
   ENSIntegrationDelegate__factory,
   ERC1538UpdateDelegate__factory,
   GenericFactory__factory,
@@ -16,7 +17,10 @@ import {
   IexecPoco2Delegate__factory,
   IexecPocoAccessorsDelegate__factory,
   IexecRelayDelegate__factory,
+  IexecPocoBoostDelegate__factory,
+  IexecPocoBoostAccessorsDelegate__factory,
 } from "../typechain";
+
 const genericFactoryAddress =
   require("@amxx/factory/deployments/GenericFactory.json").address;
 
@@ -94,6 +98,11 @@ const main = async () => {
   console.log("Deploying modules...");
   const modules = [
     {
+      name: "ERC1538QueryDelegate",
+      abi: ERC1538QueryDelegate__factory.abi,
+      bytecode: ERC1538QueryDelegate__factory.bytecode,
+    },
+    {
       name: "IexecAccessorsDelegate",
       abi: IexecAccessorsDelegate__factory.abi,
       bytecode: IexecAccessorsDelegate__factory.bytecode,
@@ -170,8 +179,19 @@ const main = async () => {
           deploymentOptions.IexecLibOrders_v5,
       }),
     },
-    // IexecPocoBoostDelegate out of scope
-    // IexecPocoBoostAccessorsDelegate out of scope
+    {
+      name: "IexecPocoBoostDelegate",
+      abi: IexecPocoBoostDelegate__factory.abi,
+      bytecode: IexecPocoBoostDelegate__factory.linkBytecode({
+        ["contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5"]:
+          deploymentOptions.IexecLibOrders_v5,
+      }),
+    },
+    {
+      name: "IexecPocoBoostAccessorsDelegate",
+      abi: IexecPocoBoostAccessorsDelegate__factory.abi,
+      bytecode: IexecPocoBoostAccessorsDelegate__factory.bytecode,
+    },
   ];
 
   const genericFactoryInstance = GenericFactory__factory.connect(
