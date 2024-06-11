@@ -1,9 +1,13 @@
 import hre, { ethers } from "hardhat";
 import CONFIG from "../config/config.json";
+import { getFunctionSignatures } from "../migrations/utils/getFunctionSignatures";
 import {
+  ERC1538Query__factory,
+  ERC1538QueryDelegate__factory,
   ENSIntegrationDelegate__factory,
   ERC1538UpdateDelegate__factory,
   GenericFactory__factory,
+  IexecAccessorsDelegate__factory,
   IexecAccessorsABILegacyDelegate__factory,
   IexecCategoryManagerDelegate__factory,
   IexecERC20Delegate__factory,
@@ -15,7 +19,10 @@ import {
   IexecPoco2Delegate__factory,
   IexecPocoAccessorsDelegate__factory,
   IexecRelayDelegate__factory,
+  IexecPocoBoostDelegate__factory,
+  IexecPocoBoostAccessorsDelegate__factory,
 } from "../typechain";
+
 const genericFactoryAddress =
   require("@amxx/factory/deployments/GenericFactory.json").address;
 
@@ -93,6 +100,36 @@ const main = async () => {
   console.log("Deploying modules...");
   const modules = [
     {
+      name: "ERC1538QueryDelegate",
+      abi: ERC1538QueryDelegate__factory.abi,
+      bytecode: ERC1538QueryDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecAccessorsDelegate",
+      abi: IexecAccessorsDelegate__factory.abi,
+      bytecode: IexecAccessorsDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecAccessorsABILegacyDelegate",
+      abi: IexecAccessorsABILegacyDelegate__factory.abi,
+      bytecode: IexecAccessorsABILegacyDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecCategoryManagerDelegate",
+      abi: IexecCategoryManagerDelegate__factory.abi,
+      bytecode: IexecCategoryManagerDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecERC20Delegate",
+      abi: IexecERC20Delegate__factory.abi,
+      bytecode: IexecERC20Delegate__factory.bytecode,
+    },
+    {
+      name: "IexecEscrowNativeDelegate",
+      abi: IexecEscrowNativeDelegate__factory.abi,
+      bytecode: IexecEscrowNativeDelegate__factory.bytecode,
+    },
+    {
       name: "IexecMaintenanceDelegate",
       abi: IexecMaintenanceDelegate__factory.abi,
       bytecode: IexecMaintenanceDelegate__factory.linkBytecode({
@@ -117,39 +154,6 @@ const main = async () => {
       }),
     },
     {
-      name: "IexecAccessorsDelegate",
-      abi: IexecPocoAccessorsDelegate__factory.abi,
-      bytecode: IexecPocoAccessorsDelegate__factory.linkBytecode({
-        ["contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5"]:
-          deploymentOptions.IexecLibOrders_v5,
-      }),
-    },
-    {
-      name: "IexecAccessorsABILegacyDelegate",
-      abi: IexecAccessorsABILegacyDelegate__factory.abi,
-      bytecode: IexecAccessorsABILegacyDelegate__factory.bytecode,
-    },
-    {
-      name: "IexecCategoryManagerDelegate",
-      abi: IexecCategoryManagerDelegate__factory.abi,
-      bytecode: IexecCategoryManagerDelegate__factory.bytecode,
-    },
-    {
-      name: "IexecERC20Delegate",
-      abi: IexecERC20Delegate__factory.abi,
-      bytecode: IexecERC20Delegate__factory.bytecode,
-    },
-    {
-      name: "IexecEscrowNativeDelegate",
-      abi: IexecEscrowNativeDelegate__factory.abi,
-      bytecode: IexecEscrowNativeDelegate__factory.bytecode,
-    },
-    {
-      name: "IexecMaintenanceExtraDelegate",
-      abi: IexecMaintenanceExtraDelegate__factory.abi,
-      bytecode: IexecMaintenanceExtraDelegate__factory.bytecode,
-    },
-    {
       name: "IexecPoco2Delegate",
       abi: IexecPoco2Delegate__factory.abi,
       bytecode: IexecPoco2Delegate__factory.bytecode,
@@ -163,6 +167,32 @@ const main = async () => {
       name: "ENSIntegrationDelegate",
       abi: ENSIntegrationDelegate__factory.abi,
       bytecode: ENSIntegrationDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecMaintenanceExtraDelegate",
+      abi: IexecMaintenanceExtraDelegate__factory.abi,
+      bytecode: IexecMaintenanceExtraDelegate__factory.bytecode,
+    },
+    {
+      name: "IexecPocoAccessorsDelegate",
+      abi: IexecPocoAccessorsDelegate__factory.abi,
+      bytecode: IexecPocoAccessorsDelegate__factory.linkBytecode({
+        ["contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5"]:
+          deploymentOptions.IexecLibOrders_v5,
+      }),
+    },
+    {
+      name: "IexecPocoBoostDelegate",
+      abi: IexecPocoBoostDelegate__factory.abi,
+      bytecode: IexecPocoBoostDelegate__factory.linkBytecode({
+        ["contracts/libs/IexecLibOrders_v5.sol:IexecLibOrders_v5"]:
+          deploymentOptions.IexecLibOrders_v5,
+      }),
+    },
+    {
+      name: "IexecPocoBoostAccessorsDelegate",
+      abi: IexecPocoBoostAccessorsDelegate__factory.abi,
+      bytecode: IexecPocoBoostAccessorsDelegate__factory.bytecode,
     },
   ];
 
@@ -182,24 +212,9 @@ const main = async () => {
     await genericFactoryInstance
       .createContract(module.bytecode, salt)
       .then((tx) => tx.wait());
-    console.log(`${module.name} deployed`);
+    console.log(`${module.name} deployed at ${moduleAddress}`);
 
     // Link modules into the factory
-    const signatures: string[] = [];
-    const moduleFactory = new ethers.ContractFactory(
-      module.abi,
-      module.bytecode,
-      owner
-    );
-    moduleFactory.interface.fragments.forEach((fragment) => {
-      if (fragment.type === "function") {
-        signatures.push(fragment.format(ethers.utils.FormatTypes.full));
-      }
-    });
-
-    // Join all signatures with semicolons
-    const functionSignatures = signatures.join(";");
-
     const proxy = ERC1538UpdateDelegate__factory.connect(
       IEXEC_HUB_ADDRESS,
       owner
@@ -207,7 +222,7 @@ const main = async () => {
     const tx = await proxy
       .updateContract(
         moduleAddress,
-        functionSignatures,
+        getFunctionSignatures(module.abi),
         "Linking " + module.name
       )
       .catch((e: any) => {
@@ -217,6 +232,19 @@ const main = async () => {
     await tx.wait();
 
     console.log(`Link ${module.name} to proxy`);
+  }
+
+  const erc1538QueryInstance = ERC1538Query__factory.connect(
+    IEXEC_HUB_ADDRESS,
+    owner
+  );
+  const functionCount = await erc1538QueryInstance.totalFunctions();
+  console.log(
+    `The deployed ERC1538Proxy now supports ${functionCount} functions:`
+  );
+  for (let i = 0; i < functionCount.toNumber(); i++) {
+    const [method, , contract] = await erc1538QueryInstance.functionByIndex(i);
+    console.log(`[${i}] ${contract} ${method}`);
   }
 };
 
