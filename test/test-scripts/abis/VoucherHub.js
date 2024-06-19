@@ -1,4 +1,4 @@
-[
+export const voucherHubAbi = [
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -1528,4 +1528,4 @@
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
+];
