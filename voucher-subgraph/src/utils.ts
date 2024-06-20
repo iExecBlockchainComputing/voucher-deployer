@@ -5,17 +5,24 @@ export function loadOrCreateAccount(id: string): Account {
   let account = Account.load(id);
   if (!account) {
     account = new Account(id);
+    account.save();
   }
-  account.save();
   return account;
 }
 
-export function loadOrCreateAsset(id: string): Asset {
+export function loadOrCreateAsset(
+  id: string,
+  type: string | null = null
+): Asset {
   let asset = Asset.load(id);
   if (!asset) {
     asset = new Asset(id);
+    asset.save();
   }
-  asset.save();
+  if (type && !asset.type) {
+    asset.type = type;
+    asset.save();
+  }
   return asset;
 }
 
@@ -26,7 +33,7 @@ export function loadOrCreateVoucherType(id: string): VoucherType {
     voucherType.eligibleAssets = [];
     voucherType.description = "";
     voucherType.duration = new BigInt(0);
+    voucherType.save();
   }
-  voucherType.save();
   return voucherType;
 }

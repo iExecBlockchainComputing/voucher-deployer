@@ -63,9 +63,14 @@ templates:
         - Account
         - Voucher
         - VoucherType
+        - Deal
       abis:
         - name: Voucher
           file: ./abis/Voucher.json
+        - name: VoucherHub
+          file: ./abis/VoucherHub.json
+        - name: PoCo
+          file: node_modules/@iexec/poco/build/contracts/IexecInterfaceNative.json
       eventHandlers:
         - event: AccountAuthorized(indexed address)
           handler: handleAccountAuthorized

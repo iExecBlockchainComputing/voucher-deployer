@@ -31,4 +31,19 @@ type Voucher @entity {
   value: BigInt!
   balance: BigInt!
   authorizedAccounts: [Account!]!
+  deals: [Deal!]! @derivedFrom(field: "sponsor")
+}
+
+type Deal @entity {
+  id: ID!
+  timestamp: BigInt!
+  sponsor: Voucher!
+  sponsoredAmount: BigInt!
+  requester: Account!
+  app: Asset!
+  dataset: Asset
+  workerpool: Asset!
+  appprice: BigInt!
+  datasetprice: BigInt!
+  workerpoolprice: BigInt!
 }
