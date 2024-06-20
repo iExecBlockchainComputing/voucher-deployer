@@ -107,6 +107,7 @@ export function handleVoucherDebited(event: VoucherDebited): void {
   if (voucher) {
     let sponsoredAmount = event.params.sponsoredAmount;
     voucher.balance = voucher.balance.minus(sponsoredAmount);
+    voucher.save();
   }
 }
 
