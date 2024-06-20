@@ -11,7 +11,13 @@ import {
 import { createVoucher } from "./helpers/createVoucher.js";
 
 const main = async () => {
-  const { VOUCHER_TYPE_ID, VOUCHER_VALUE } = process.env;
+  const {
+    VOUCHER_TYPE_ID,
+    VOUCHER_VALUE,
+    APP_PRICE,
+    DATASET_PRICE,
+    WORKERPOOL_PRICE,
+  } = process.env;
 
   const { iexec: iexecWorkerpoolOwner, address: workerpoolAddress } =
     await getWorkerpoolAddressAndOwnerWallet();
@@ -42,16 +48,19 @@ const main = async () => {
         .createWorkerpoolorder({
           workerpool: workerpoolAddress,
           category: 0,
+          workerpoolprice: WORKERPOOL_PRICE,
         })
         .then(iexecWorkerpoolOwner.order.signWorkerpoolorder),
       iexecAppOwner.order
         .createApporder({
           app: appAddress,
+          appprice: APP_PRICE,
         })
         .then(iexecAppOwner.order.signApporder),
       iexecDatasetOwner.order
         .createDatasetorder({
           dataset: datasetAddress,
+          datasetprice: DATASET_PRICE,
         })
         .then(iexecDatasetOwner.order.signDatasetorder),
       iexecRequester.order
@@ -60,6 +69,9 @@ const main = async () => {
           dataset: datasetAddress,
           workerpool: workerpoolAddress,
           category: 0,
+          appmaxprice: APP_PRICE,
+          datasetmaxprice: DATASET_PRICE,
+          workerpoolmaxprice: WORKERPOOL_PRICE,
         })
         .then(iexecRequester.order.signRequestorder),
     ]);
