@@ -7,7 +7,7 @@ echo -e "\n#####################################\n# deploying iexec-voucher-cont
 cd /app/iexec-voucher-contracts
 cat .git-log
 cp .git-log /app/out/iexec-voucher-contracts.git-log
-npx hardhat run deploy/deploy.ts --network bellecour-fork
+npx hardhat run deploy/deploy.ts --network bellecour-fork || exit 1
 
 cp /app/iexec-voucher-contracts/VoucherHub.address /app/out/
 cp /app/iexec-voucher-contracts/VoucherHub.block /app/out/
@@ -20,7 +20,7 @@ echo -e "\n##########################\n# deploying PoCo upgrade #\n#############
 cd /app/PoCo
 cat .git-log
 cp .git-log /app/out/PoCo.git-log
-npx hardhat run scripts/upgrade.ts --network bellecour-fork
+npx hardhat run scripts/upgrade.ts --network bellecour-fork || exit 1
 
 # deploy subgraph
 echo -e "\n##############################################\n# deploying iexec-voucher-contracts subgraph #\n##############################################\n"
@@ -32,7 +32,7 @@ else
     cd /app/voucher-subgraph
     export VOUCHER_HUB_ADDRESS=$(cat /app/out/VoucherHub.address)
     export VOUCHER_HUB_START_BLOCK=$(cat /app/out/VoucherHub.block)
-    npm run codegen
-    npm run create
-    npm run deploy
+    npm run codegen || exit 1
+    npm run create || exit 1
+    npm run deploy || exit 1
 fi

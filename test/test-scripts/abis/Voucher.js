@@ -1,4 +1,4 @@
-[
+export const voucherAbi = [
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -853,4 +853,4 @@
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
+];
