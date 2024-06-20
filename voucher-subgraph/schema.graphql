@@ -3,18 +3,6 @@ type Account @entity {
   voucher: Voucher @derivedFrom(field: "owner")
 }
 
-enum AssetType {
-  app
-  dataset
-  workerpool
-}
-
-type Asset @entity {
-  id: ID!
-  voucherTypes: [VoucherType!]! @derivedFrom(field: "eligibleAssets")
-  type: AssetType
-}
-
 type VoucherType @entity {
   id: ID!
   description: String!
@@ -34,16 +22,45 @@ type Voucher @entity {
   deals: [Deal!]! @derivedFrom(field: "sponsor")
 }
 
+# common interface for all sponsored assets
+interface Asset {
+  id: ID!
+  voucherTypes: [VoucherType!]!
+}
+
+type App implements Asset @entity {
+  id: ID!
+  name: String!
+  usages: [Deal!]! @derivedFrom(field: "app")
+  voucherTypes: [VoucherType!]! @derivedFrom(field: "eligibleAssets")
+}
+
+type Dataset implements Asset @entity {
+  id: ID!
+  name: String!
+  usages: [Deal!]! @derivedFrom(field: "dataset")
+  voucherTypes: [VoucherType!]! @derivedFrom(field: "eligibleAssets")
+}
+
+type Workerpool implements Asset @entity {
+  id: ID!
+  description: String!
+  usages: [Deal!]! @derivedFrom(field: "workerpool")
+  voucherTypes: [VoucherType!]! @derivedFrom(field: "eligibleAssets")
+}
+
+# the Deal entity schema is based on the Deal entity of PoCo-subgraph
 type Deal @entity {
   id: ID!
+  sponsor: Voucher # voucher specific
+  sponsoredAmount: BigInt # voucher specific
   timestamp: BigInt!
-  sponsor: Voucher!
-  sponsoredAmount: BigInt!
   requester: Account!
-  app: Asset!
-  dataset: Asset
-  workerpool: Asset!
-  appprice: BigInt!
-  datasetprice: BigInt!
-  workerpoolprice: BigInt!
+  app: App!
+  dataset: Dataset
+  workerpool: Workerpool!
+  botSize: BigInt!
+  appPrice: BigInt!
+  datasetPrice: BigInt!
+  workerpoolPrice: BigInt!
 }

@@ -1,5 +1,5 @@
-import { PoCo as PoCoContract } from "../generated/VoucherHub/PoCo";
-import { VoucherHub as VoucherHubContract } from "../generated/VoucherHub/VoucherHub";
+import { PoCo as PoCoContract } from "../generated/templates/Voucher/PoCo";
+import { VoucherHub as VoucherHubContract } from "../generated/templates/Voucher/VoucherHub";
 import {
   Voucher as VoucherContract,
   AccountAuthorized,
@@ -7,7 +7,12 @@ import {
   OrdersMatchedWithVoucher,
 } from "../generated/templates/Voucher/Voucher";
 import { Deal, Voucher } from "../generated/schema";
-import { loadOrCreateAccount, loadOrCreateAsset } from "./utils";
+import {
+  loadOrCreateAccount,
+  loadOrCreateApp,
+  loadOrCreateDataset,
+  loadOrCreateWorkerpool,
+} from "./utils";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 export function handleAccountAuthorized(event: AccountAuthorized): void {
@@ -69,28 +74,25 @@ export function handleOrdersMatchedWithVoucher(
 
       let pocoDeal = pocoContract.viewDeal(event.params.dealId);
 
-      let app = loadOrCreateAsset(pocoDeal.app.pointer.toHex(), "app");
+      let app = loadOrCreateApp(pocoDeal.app.pointer);
       deal.app = app.id;
 
       if (pocoDeal.dataset.pointer !== Address.zero()) {
-        let dataset = loadOrCreateAsset(
-          pocoDeal.dataset.pointer.toHex(),
-          "dataset"
-        );
+        let dataset = loadOrCreateDataset(pocoDeal.dataset.pointer);
         deal.dataset = dataset.id;
       }
-      let workerpool = loadOrCreateAsset(
-        pocoDeal.workerpool.pointer.toHex(),
-        "workerpool"
-      );
+
+      let workerpool = loadOrCreateWorkerpool(pocoDeal.workerpool.pointer);
       deal.workerpool = workerpool.id;
 
       let requester = loadOrCreateAccount(pocoDeal.requester.toHex());
       deal.requester = requester.id;
 
-      deal.appprice = pocoDeal.app.price;
-      deal.datasetprice = pocoDeal.dataset.price;
-      deal.workerpoolprice = pocoDeal.workerpool.price;
+      deal.appPrice = pocoDeal.app.price;
+      deal.datasetPrice = pocoDeal.dataset.price;
+      deal.workerpoolPrice = pocoDeal.workerpool.price;
+
+      deal.botSize = pocoDeal.botSize;
 
       deal.save();
     }

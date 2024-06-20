@@ -18,9 +18,11 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Account
-        - Asset
         - Voucher
         - VoucherType
+        - App
+        - Dataset
+        - Workerpool
       abis:
         - name: VoucherHub
           file: ./abis/VoucherHub.json
@@ -32,6 +34,12 @@ dataSources:
           file: node_modules/@iexec/poco/build/contracts/DatasetRegistry.json
         - name: WorkerpoolRegistry
           file: node_modules/@iexec/poco/build/contracts/WorkerpoolRegistry.json
+        - name: App
+          file: node_modules/@iexec/poco/build/contracts/AppInterface.json
+        - name: Dataset
+          file: node_modules/@iexec/poco/build/contracts/DatasetInterface.json
+        - name: Workerpool
+          file: node_modules/@iexec/poco/build/contracts/WorkerpoolInterface.json
       eventHandlers:
         - event: EligibleAssetAdded(indexed uint256,address)
           handler: handleEligibleAssetAdded
@@ -64,6 +72,9 @@ templates:
         - Voucher
         - VoucherType
         - Deal
+        - App
+        - Dataset
+        - Workerpool
       abis:
         - name: Voucher
           file: ./abis/Voucher.json
@@ -71,6 +82,18 @@ templates:
           file: ./abis/VoucherHub.json
         - name: PoCo
           file: node_modules/@iexec/poco/build/contracts/IexecInterfaceNative.json
+        - name: AppRegistry
+          file: node_modules/@iexec/poco/build/contracts/AppRegistry.json
+        - name: DatasetRegistry
+          file: node_modules/@iexec/poco/build/contracts/DatasetRegistry.json
+        - name: WorkerpoolRegistry
+          file: node_modules/@iexec/poco/build/contracts/WorkerpoolRegistry.json
+        - name: App
+          file: node_modules/@iexec/poco/build/contracts/AppInterface.json
+        - name: Dataset
+          file: node_modules/@iexec/poco/build/contracts/DatasetInterface.json
+        - name: Workerpool
+          file: node_modules/@iexec/poco/build/contracts/WorkerpoolInterface.json
       eventHandlers:
         - event: AccountAuthorized(indexed address)
           handler: handleAccountAuthorized
