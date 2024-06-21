@@ -13,7 +13,7 @@ import {
   loadOrCreateDataset,
   loadOrCreateWorkerpool,
 } from "./utils";
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 
 export function handleAccountAuthorized(event: AccountAuthorized): void {
   let voucherId = event.address.toHex();
