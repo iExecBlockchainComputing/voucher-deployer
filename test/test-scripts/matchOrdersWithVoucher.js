@@ -18,6 +18,7 @@ const main = async () => {
     DATASET_PRICE,
     WORKERPOOL_PRICE,
     NO_DATASET,
+    REQUESTER_PRIVATE_KEY,
   } = process.env;
 
   const useDataset = !NO_DATASET;
@@ -36,7 +37,10 @@ const main = async () => {
     datasetAddress = res.address;
   }
 
-  const requesterWallet = Wallet.createRandom();
+  const requesterWallet = REQUESTER_PRIVATE_KEY
+    ? new Wallet(REQUESTER_PRIVATE_KEY)
+    : Wallet.createRandom();
+
   const iexecRequester = new IExec(
     {
       ethProvider: getSignerFromPrivateKey(RPC_URL, requesterWallet.privateKey),
