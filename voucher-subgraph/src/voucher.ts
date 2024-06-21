@@ -77,7 +77,11 @@ export function handleOrdersMatchedWithVoucher(
       let app = loadOrCreateApp(pocoDeal.app.pointer);
       deal.app = app.id;
 
-      if (pocoDeal.dataset.pointer !== Address.zero()) {
+      // create dataset if a dataset is used
+      if (
+        pocoDeal.dataset.pointer.toHex() != // != because !== does not work
+        "0x0000000000000000000000000000000000000000"
+      ) {
         let dataset = loadOrCreateDataset(pocoDeal.dataset.pointer);
         deal.dataset = dataset.id;
       }
