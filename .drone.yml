@@ -50,7 +50,7 @@ steps:
     commands:
       - date -u -Iseconds | sed 's/+00:00//g' | sed 's/:/-/g' >> .tags
 
-  - name: docker publish latest
+  - name: docker publish
     image: plugins/docker
     pull: always
     settings:
