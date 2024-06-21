@@ -17,7 +17,10 @@ const main = async () => {
     APP_PRICE,
     DATASET_PRICE,
     WORKERPOOL_PRICE,
+    NO_DATASET,
   } = process.env;
+
+  const useDataset = !NO_DATASET;
 
   const { iexec: iexecWorkerpoolOwner, address: workerpoolAddress } =
     await getWorkerpoolAddressAndOwnerWallet();
@@ -25,8 +28,13 @@ const main = async () => {
   const { iexec: iexecAppOwner, address: appAddress } =
     await getAppAddressAndOwnerWallet();
 
-  const { iexec: iexecDatasetOwner, address: datasetAddress } =
-    await getDatasetAddressAndOwnerWallet();
+  let iexecDatasetOwner;
+  let datasetAddress;
+  if (useDataset) {
+    const res = await getDatasetAddressAndOwnerWallet();
+    iexecDatasetOwner = res.iexec;
+    datasetAddress = res.address;
+  }
 
   const requesterWallet = Wallet.createRandom();
   const iexecRequester = new IExec(
@@ -42,7 +50,7 @@ const main = async () => {
     value: VOUCHER_VALUE,
   });
 
-  const [workerpoolorder, apporder, datasetorder, requestorder] =
+  const [workerpoolorder, apporder, datasetorderOrUndefined, requestorder] =
     await Promise.all([
       iexecWorkerpoolOwner.order
         .createWorkerpoolorder({
@@ -57,16 +65,18 @@ const main = async () => {
           appprice: APP_PRICE,
         })
         .then(iexecAppOwner.order.signApporder),
-      iexecDatasetOwner.order
-        .createDatasetorder({
-          dataset: datasetAddress,
-          datasetprice: DATASET_PRICE,
-        })
-        .then(iexecDatasetOwner.order.signDatasetorder),
+      useDataset
+        ? iexecDatasetOwner.order
+            .createDatasetorder({
+              dataset: datasetAddress,
+              datasetprice: DATASET_PRICE,
+            })
+            .then(iexecDatasetOwner.order.signDatasetorder)
+        : Promise.resolve(undefined),
       iexecRequester.order
         .createRequestorder({
           app: appAddress,
-          dataset: datasetAddress,
+          dataset: useDataset ? datasetAddress : undefined,
           workerpool: workerpoolAddress,
           category: 0,
           appmaxprice: APP_PRICE,
@@ -79,7 +89,7 @@ const main = async () => {
   const { dealid } = await iexecRequester.order.matchOrders(
     {
       apporder,
-      datasetorder,
+      datasetorder: datasetorderOrUndefined,
       workerpoolorder,
       requestorder,
     },
