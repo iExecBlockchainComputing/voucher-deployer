@@ -3,7 +3,10 @@ import {
   EligibleAssetRemoved,
   VoucherCreated,
   VoucherDebited,
+  VoucherDrained,
   VoucherHub,
+  VoucherRefunded,
+  VoucherToppedUp,
   VoucherTypeCreated,
   VoucherTypeDescriptionUpdated,
   VoucherTypeDurationUpdated,
@@ -121,6 +124,18 @@ export function handleVoucherDebited(event: VoucherDebited): void {
     voucher.balance = voucher.balance.minus(sponsoredAmount);
     voucher.save();
   }
+}
+
+export function handleVoucherDrained(event: VoucherDrained): void {
+  // TODO
+}
+
+export function handleVoucherRefunded(event: VoucherRefunded): void {
+  // TODO
+}
+
+export function handleVoucherToppedUp(event: VoucherToppedUp): void {
+  // TODO
 }
 
 export function handleVoucherTypeCreated(event: VoucherTypeCreated): void {
