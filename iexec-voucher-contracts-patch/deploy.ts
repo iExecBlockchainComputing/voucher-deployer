@@ -15,8 +15,9 @@ async function main() {
   console.log(`Voucher implementation: ${await beacon.implementation()}`);
 
   const voucherHub = await voucherHubUtils.deployHub(
-    admin.address,
-    admin.address,
+    admin.address, // proxy admin
+    admin.address, // voucher manager
+    admin.address, // voucher minter
     iexecPoco,
     beaconAddress
   );
