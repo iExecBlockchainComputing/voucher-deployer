@@ -7,13 +7,128 @@ trigger:
     - push
 
 steps:
-  - name: docker publish dry-run
+  - name: prepare-local-stack-env
+    image: node
+    commands:
+      - node test/prepare-test-env.js
+
+  - name: bellecour-fork
+    detach: true
+    image: ghcr.io/foundry-rs/foundry:v1.0.0
+    pull: always
+    expose:
+      - 8545
+    commands:
+      - anvil --host 0.0.0.0 --port 8545 --block-time 1 --hardfork berlin --fork-url $(cat local-stack-env/BELLECOUR_FORK_URL) --fork-block-number $(cat local-stack-env/BELLECOUR_FORK_BLOCK) --chain-id 134 --gas-limit 6700000 --gas-price 0
+    depends_on:
+      - prepare-local-stack-env
+
+  - name: bellecour-fork-healthy
+    image: bash
+    commands:
+      - while ! nc -z bellecour-fork 8545 ; do sleep 1 ; done && echo "bellecour-fork ready"
+    depends_on:
+      - bellecour-fork
+
+  - name: ipfs
+    image: ipfs/go-ipfs:v0.9.1
+    detach: true
+    expose:
+      - 8080
+      - 5001
+
+  - name: ipfs-healthy
+    image: bash
+    commands:
+      - while ! nc -z ipfs 8080 ; do sleep 1 ; done && echo "ipfs gateway ready"
+      - while ! nc -z ipfs 5001 ; do sleep 1 ; done && echo "ipfs upload ready"
+    depends_on:
+      - ipfs
+
+  - name: postgres
+    image: postgres:12
+    detach: true
+    commands:
+      - docker-entrypoint.sh postgres -cshared_preload_libraries=pg_stat_statements
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: graphnode
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: graphnode-db
+
+  - name: postgres-healthy
+    image: bash
+    commands:
+      - while ! nc -z postgres 5432 ; do sleep 1 ; done && echo "postgres ready"
+    depends_on:
+      - postgres
+
+  - name: graphnode
+    image: graphprotocol/graph-node:v0.27.0
+    detach: true
+    expose:
+      - 8000
+      - 8020
+    environment:
+      postgres_host: postgres
+      postgres_port: 5432
+      postgres_user: graphnode
+      postgres_pass: password
+      postgres_db: graphnode-db
+      ipfs: ipfs:5001
+      ethereum: bellecour:http://bellecour-fork:8545
+    commands:
+      - export GRAPH_ETHEREUM_GENESIS_BLOCK_NUMBER=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
+      - echo $GRAPH_ETHEREUM_GENESIS_BLOCK_NUMBER
+      - start
+    depends_on:
+      - prepare-local-stack-env
+      - bellecour-fork-healthy
+      - ipfs-healthy
+      - postgres-healthy
+
+  - name: graphnode-healthy
+    image: bash
+    commands:
+      - while ! nc -z graphnode 8020 ; do sleep 1 ; done && echo "graphnode admin ready"
+      - while ! nc -z graphnode 8000 ; do sleep 1 ; done && echo "graphnode gql ready"
+    depends_on:
+      - graphnode
+
+  - name: stack-ready
+    image: bash
+    commands:
+      - echo "all services ready"
+    depends_on:
+      - bellecour-fork-healthy
+      - graphnode-healthy
+
+  - name: build-docker-image
     image: plugins/docker
     pull: always
     settings:
       repo: pierreiexec/voucher-deployer
       dockerfile: Dockerfile
-      dry_run: true
+      tags:
+        - temp-${DRONE_BUILD_NUMBER}-${DRONE_COMMIT}
+      username:
+        from_secret: docker-user
+      password:
+        from_secret: docker-token
+
+  - name: test-docker-image
+    image: pierreiexec/voucher-deployer:temp-${DRONE_BUILD_NUMBER}-${DRONE_COMMIT}
+    pull: always
+    environment:
+      RPC_URL: http://bellecour-fork:8545
+      GRAPHNODE_URL: http://graphnode:8020
+      IPFS_URL: http://ipfs:5001
+    commands:
+      - sh /app/entrypoint.sh
+    depends_on:
+      - stack-ready
+      - build-docker-image
 
 ---
 kind: pipeline
