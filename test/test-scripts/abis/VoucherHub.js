@@ -1143,6 +1143,11 @@ export const voucherHubAbi = [
     "inputs": [
       {
         "internalType": "address",
+        "name": "admin",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "manager",
         "type": "address"
       },
