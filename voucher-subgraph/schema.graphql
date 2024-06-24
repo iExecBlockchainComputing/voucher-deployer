@@ -16,7 +16,7 @@ type Voucher @entity {
   owner: Account!
   expiration: BigInt!
   voucherType: VoucherType!
-  value: BigInt!
+  value: BigInt! # not sure what it is supposed to be
   balance: BigInt!
   authorizedAccounts: [Account!]!
   deals: [Deal!]! @derivedFrom(field: "sponsor")

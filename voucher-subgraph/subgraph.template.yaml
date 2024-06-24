@@ -54,7 +54,7 @@ dataSources:
         - event: VoucherRefunded(indexed address,uint256)
           handler: handleVoucherRefunded
         - event: VoucherToppedUp(indexed address,uint256,uint256)
-          handler: handleVoucherRefunded
+          handler: handleVoucherToppedUp
         - event: VoucherTypeCreated(indexed uint256,string,uint256)
           handler: handleVoucherTypeCreated
         - event: VoucherTypeDescriptionUpdated(indexed uint256,string)

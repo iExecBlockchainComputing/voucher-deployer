@@ -127,15 +127,39 @@ export function handleVoucherDebited(event: VoucherDebited): void {
 }
 
 export function handleVoucherDrained(event: VoucherDrained): void {
-  // TODO
+  let voucherId = event.params.voucher.toHex();
+  let voucher = Voucher.load(voucherId);
+  // do not index balance changes on voucher not indexed
+  if (voucher) {
+    let drainedAmount = event.params.amount;
+    voucher.balance = voucher.balance.minus(drainedAmount);
+    voucher.save();
+  }
 }
 
 export function handleVoucherRefunded(event: VoucherRefunded): void {
-  // TODO
+  let voucherId = event.params.voucher.toHex();
+  let voucher = Voucher.load(voucherId);
+  // do not index balance changes on voucher not indexed
+  if (voucher) {
+    let refundedAmount = event.params.amount;
+    voucher.balance = voucher.balance.plus(refundedAmount);
+    voucher.save();
+  }
 }
 
 export function handleVoucherToppedUp(event: VoucherToppedUp): void {
-  // TODO
+  let voucherId = event.params.voucher.toHex();
+  let voucher = Voucher.load(voucherId);
+  // do not index balance changes on voucher not indexed
+  if (voucher) {
+    let topUpValue = event.params.value;
+    let topUpExpiration = event.params.expiration;
+    voucher.value = topUpValue; // not sure: use the top-up value as new base value
+    voucher.balance = voucher.balance.plus(topUpValue);
+    voucher.expiration = topUpExpiration;
+    voucher.save();
+  }
 }
 
 export function handleVoucherTypeCreated(event: VoucherTypeCreated): void {
