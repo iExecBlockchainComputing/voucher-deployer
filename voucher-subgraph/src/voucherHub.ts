@@ -18,7 +18,6 @@ import {
   loadOrCreateAccount,
   loadOrCreateApp,
   loadOrCreateDataset,
-  loadOrCreateVoucherType,
   loadOrCreateWorkerpool,
 } from "./utils";
 
@@ -128,7 +127,11 @@ export function handleVoucherTypeCreated(event: VoucherTypeCreated): void {
   let id = event.params.id.toString();
   let description = event.params.description;
   let duration = event.params.duration;
-  let voucherType = loadOrCreateVoucherType(id);
+  let voucherType = VoucherType.load(id);
+  if (!voucherType) {
+    voucherType = new VoucherType(id);
+    voucherType.eligibleAssets = [];
+  }
   voucherType.description = description;
   voucherType.duration = duration;
   voucherType.save();
@@ -139,9 +142,12 @@ export function handleVoucherTypeDescriptionUpdated(
 ): void {
   let id = event.params.id.toString();
   let description = event.params.description;
-  let voucherType = loadOrCreateVoucherType(id);
-  voucherType.description = description;
-  voucherType.save();
+  let voucherType = VoucherType.load(id);
+  // do not index changes on non voucherType not indexed
+  if (voucherType) {
+    voucherType.description = description;
+    voucherType.save();
+  }
 }
 
 export function handleVoucherTypeDurationUpdated(
@@ -149,7 +155,10 @@ export function handleVoucherTypeDurationUpdated(
 ): void {
   let id = event.params.id.toString();
   let duration = event.params.duration;
-  let voucherType = loadOrCreateVoucherType(id);
-  voucherType.duration = duration;
-  voucherType.save();
+  let voucherType = VoucherType.load(id);
+  // do not index changes on non voucherType not indexed
+  if (voucherType) {
+    voucherType.duration = duration;
+    voucherType.save();
+  }
 }

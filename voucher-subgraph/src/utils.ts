@@ -19,18 +19,6 @@ export function loadOrCreateAccount(id: string): Account {
   return account;
 }
 
-export function loadOrCreateVoucherType(id: string): VoucherType {
-  let voucherType = VoucherType.load(id);
-  if (!voucherType) {
-    voucherType = new VoucherType(id);
-    voucherType.eligibleAssets = [];
-    voucherType.description = "";
-    voucherType.duration = new BigInt(0);
-    voucherType.save();
-  }
-  return voucherType;
-}
-
 export function loadOrCreateApp(address: Address): App {
   let app = App.load(address.toHex());
   if (!app) {
