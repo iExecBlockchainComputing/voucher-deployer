@@ -16,7 +16,7 @@ type Voucher @entity {
   owner: Account!
   expiration: BigInt!
   voucherType: VoucherType!
-  value: BigInt! # not sure what it is supposed to be
+  value: BigInt! # last funding value
   balance: BigInt!
   authorizedAccounts: [Account!]!
   fundings: [VoucherFunding!]! @derivedFrom(field: "voucher")

@@ -172,7 +172,7 @@ export function handleVoucherToppedUp(event: VoucherToppedUp): void {
   if (voucher) {
     let topUpValue = event.params.value;
     let topUpExpiration = event.params.expiration;
-    voucher.value = topUpValue; // not sure: use the top-up value as new base value
+    voucher.value = topUpValue;
     voucher.balance = voucher.balance.plus(topUpValue);
     voucher.expiration = topUpExpiration;
     voucher.save();
