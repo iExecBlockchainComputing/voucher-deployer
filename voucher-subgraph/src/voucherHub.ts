@@ -15,9 +15,15 @@ import { PoCo } from "../generated/VoucherHub/PoCo";
 import { AppRegistry } from "../generated/VoucherHub/AppRegistry";
 import { DatasetRegistry } from "../generated/VoucherHub/DatasetRegistry";
 import { WorkerpoolRegistry } from "../generated/VoucherHub/WorkerpoolRegistry";
-import { Voucher, VoucherType } from "../generated/schema";
+import {
+  Voucher,
+  VoucherCreation,
+  VoucherTopUp,
+  VoucherType,
+} from "../generated/schema";
 import { Voucher as VoucherTemplate } from "../generated/templates";
 import {
+  getEventId,
   loadOrCreateAccount,
   loadOrCreateApp,
   loadOrCreateDataset,
@@ -112,6 +118,17 @@ export function handleVoucherCreated(event: VoucherCreated): void {
     voucher.balance = value;
     voucher.expiration = expiration;
     voucher.save();
+
+    // index funding
+    let fundingId = getEventId(event);
+    let voucherCreation = VoucherCreation.load(fundingId);
+    if (!voucherCreation) {
+      voucherCreation = new VoucherCreation(fundingId);
+    }
+    voucherCreation.value = value;
+    voucherCreation.timestamp = event.block.timestamp;
+    voucherCreation.voucher = voucherId;
+    voucherCreation.save();
   }
 }
 
@@ -159,6 +176,17 @@ export function handleVoucherToppedUp(event: VoucherToppedUp): void {
     voucher.balance = voucher.balance.plus(topUpValue);
     voucher.expiration = topUpExpiration;
     voucher.save();
+
+    // index funding
+    let fundingId = getEventId(event);
+    let voucherTopUp = VoucherTopUp.load(fundingId);
+    if (!voucherTopUp) {
+      voucherTopUp = new VoucherTopUp(fundingId);
+    }
+    voucherTopUp.value = topUpValue;
+    voucherTopUp.timestamp = event.block.timestamp;
+    voucherTopUp.voucher = voucherId;
+    voucherTopUp.save();
   }
 }
 

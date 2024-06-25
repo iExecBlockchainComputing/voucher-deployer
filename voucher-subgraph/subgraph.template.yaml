@@ -20,6 +20,8 @@ dataSources:
         - Account
         - Voucher
         - VoucherType
+        - VoucherCreation
+        - VoucherTopUp
         - App
         - Dataset
         - Workerpool

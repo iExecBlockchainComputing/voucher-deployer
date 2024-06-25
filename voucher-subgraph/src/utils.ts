@@ -1,11 +1,5 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import {
-  Account,
-  App,
-  Dataset,
-  VoucherType,
-  Workerpool,
-} from "../generated/schema";
+import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Account, App, Dataset, Workerpool } from "../generated/schema";
 import { App as AppContract } from "../generated/templates/Voucher/App";
 import { Dataset as DatasetContract } from "../generated/templates/Voucher/Dataset";
 import { Workerpool as WorkerpoolContract } from "../generated/templates/Voucher/Workerpool";
@@ -50,4 +44,10 @@ export function loadOrCreateWorkerpool(address: Address): Workerpool {
     workerpool.save();
   }
   return workerpool;
+}
+
+export function getEventId(event: ethereum.Event): string {
+  return (
+    event.transaction.hash.toHex() + "_" + event.transactionLogIndex.toString()
+  );
 }

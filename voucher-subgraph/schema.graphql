@@ -19,7 +19,29 @@ type Voucher @entity {
   value: BigInt! # not sure what it is supposed to be
   balance: BigInt!
   authorizedAccounts: [Account!]!
+  fundings: [VoucherFunding!]! @derivedFrom(field: "voucher")
   deals: [Deal!]! @derivedFrom(field: "sponsor")
+}
+
+interface VoucherFunding {
+  id: ID!
+  timestamp: BigInt!
+  value: BigInt!
+  voucher: Voucher!
+}
+
+type VoucherCreation implements VoucherFunding @entity {
+  id: ID!
+  timestamp: BigInt!
+  value: BigInt!
+  voucher: Voucher!
+}
+
+type VoucherTopUp implements VoucherFunding @entity {
+  id: ID!
+  timestamp: BigInt!
+  value: BigInt!
+  voucher: Voucher!
 }
 
 # common interface for all sponsored assets
