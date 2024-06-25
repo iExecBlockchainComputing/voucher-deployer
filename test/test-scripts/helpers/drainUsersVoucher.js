@@ -2,7 +2,6 @@ import { Contract, ZeroAddress } from "ethers";
 import {
   VOUCHER_HUB_ADDRESS,
   provider,
-  setBalance,
   getVoucherManagerWallet,
 } from "./utils.js";
 import { voucherHubAbi } from "../abis/VoucherHub.js";
