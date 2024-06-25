@@ -11,7 +11,17 @@ import {
 import { createVoucher } from "./helpers/createVoucher.js";
 
 const main = async () => {
-  const { VOUCHER_TYPE_ID, VOUCHER_VALUE } = process.env;
+  const {
+    VOUCHER_TYPE_ID,
+    VOUCHER_VALUE,
+    APP_PRICE,
+    DATASET_PRICE,
+    WORKERPOOL_PRICE,
+    NO_DATASET,
+    REQUESTER_PRIVATE_KEY,
+  } = process.env;
+
+  const useDataset = !NO_DATASET;
 
   const { iexec: iexecWorkerpoolOwner, address: workerpoolAddress } =
     await getWorkerpoolAddressAndOwnerWallet();
@@ -19,10 +29,18 @@ const main = async () => {
   const { iexec: iexecAppOwner, address: appAddress } =
     await getAppAddressAndOwnerWallet();
 
-  const { iexec: iexecDatasetOwner, address: datasetAddress } =
-    await getDatasetAddressAndOwnerWallet();
+  let iexecDatasetOwner;
+  let datasetAddress;
+  if (useDataset) {
+    const res = await getDatasetAddressAndOwnerWallet();
+    iexecDatasetOwner = res.iexec;
+    datasetAddress = res.address;
+  }
 
-  const requesterWallet = Wallet.createRandom();
+  const requesterWallet = REQUESTER_PRIVATE_KEY
+    ? new Wallet(REQUESTER_PRIVATE_KEY)
+    : Wallet.createRandom();
+
   const iexecRequester = new IExec(
     {
       ethProvider: getSignerFromPrivateKey(RPC_URL, requesterWallet.privateKey),
@@ -36,30 +54,38 @@ const main = async () => {
     value: VOUCHER_VALUE,
   });
 
-  const [workerpoolorder, apporder, datasetorder, requestorder] =
+  const [workerpoolorder, apporder, datasetorderOrUndefined, requestorder] =
     await Promise.all([
       iexecWorkerpoolOwner.order
         .createWorkerpoolorder({
           workerpool: workerpoolAddress,
           category: 0,
+          workerpoolprice: WORKERPOOL_PRICE,
         })
         .then(iexecWorkerpoolOwner.order.signWorkerpoolorder),
       iexecAppOwner.order
         .createApporder({
           app: appAddress,
+          appprice: APP_PRICE,
         })
         .then(iexecAppOwner.order.signApporder),
-      iexecDatasetOwner.order
-        .createDatasetorder({
-          dataset: datasetAddress,
-        })
-        .then(iexecDatasetOwner.order.signDatasetorder),
+      useDataset
+        ? iexecDatasetOwner.order
+            .createDatasetorder({
+              dataset: datasetAddress,
+              datasetprice: DATASET_PRICE,
+            })
+            .then(iexecDatasetOwner.order.signDatasetorder)
+        : Promise.resolve(undefined),
       iexecRequester.order
         .createRequestorder({
           app: appAddress,
-          dataset: datasetAddress,
+          dataset: useDataset ? datasetAddress : undefined,
           workerpool: workerpoolAddress,
           category: 0,
+          appmaxprice: APP_PRICE,
+          datasetmaxprice: DATASET_PRICE,
+          workerpoolmaxprice: WORKERPOOL_PRICE,
         })
         .then(iexecRequester.order.signRequestorder),
     ]);
@@ -67,7 +93,7 @@ const main = async () => {
   const { dealid } = await iexecRequester.order.matchOrders(
     {
       apporder,
-      datasetorder,
+      datasetorder: datasetorderOrUndefined,
       workerpoolorder,
       requestorder,
     },

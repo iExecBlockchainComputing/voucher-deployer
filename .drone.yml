@@ -141,15 +141,31 @@ trigger:
     - promote
   target:
     - latest
+    - next
 
 steps:
-  - name: set tags
+  - name: set tag latest
     image: bash
     commands:
       - echo -n "latest," > .tags
+    when:
+      target:
+        - latest
+
+  - name: set tag next
+    image: bash
+    commands:
+      - echo -n "next," > .tags
+    when:
+      target:
+        - next
+
+  - name: set date tag
+    image: bash
+    commands:
       - date -u -Iseconds | sed 's/+00:00//g' | sed 's/:/-/g' >> .tags
 
-  - name: docker publish latest
+  - name: docker publish
     image: plugins/docker
     pull: always
     settings:

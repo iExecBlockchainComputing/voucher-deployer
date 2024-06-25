@@ -16,6 +16,7 @@ COPY voucher-subgraph voucher-subgraph
 WORKDIR /app/iexec-voucher-contracts
 
 RUN git checkout develop
+RUN git pull
 RUN git log -1 > .git-log
 RUN rm -rf .git
 RUN npm ci
@@ -38,6 +39,7 @@ RUN cat artifacts/contracts/beacon/Voucher.sol/Voucher.json | jq .abi > ./abis/V
 WORKDIR /app/PoCo
 
 RUN git checkout develop
+RUN git pull
 RUN git log -1 > .git-log
 RUN rm -rf .git
 RUN npm ci

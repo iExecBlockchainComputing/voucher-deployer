@@ -1,4 +1,4 @@
-import { Contract, Wallet } from "ethers";
+import { Contract, Wallet, ZeroAddress } from "ethers";
 import {
   VOUCHER_HUB_ADDRESS,
   provider,
@@ -16,14 +16,26 @@ export const createVoucher = async ({
     `Creating voucher type ${voucherType} for ${ownerAddress} with value ${value}`
   );
 
-  const weiValue = BigInt(value) * 10n ** 9n;
-  const voucherManagerWallet = await getVoucherManagerWallet();
-  await setBalance(voucherManagerWallet.address, weiValue);
   const voucherHubContract = new Contract(
     VOUCHER_HUB_ADDRESS,
     voucherHubAbi,
     provider
   );
+
+  const existingVoucherAddress = await voucherHubContract.getVoucher(
+    ownerAddress
+  );
+
+  if (existingVoucherAddress !== ZeroAddress) {
+    console.log(
+      `${ownerAddress} already owns the voucher ${existingVoucherAddress}, skipping creation`
+    );
+    return;
+  }
+
+  const weiValue = BigInt(value) * 10n ** 9n;
+  const voucherManagerWallet = await getVoucherManagerWallet();
+  await setBalance(voucherManagerWallet.address, weiValue);
 
   const pocoAddress = await voucherHubContract.getIexecPoco();
   const pocoContract = new Contract(

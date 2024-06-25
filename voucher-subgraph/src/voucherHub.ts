@@ -16,61 +16,74 @@ import { Voucher, VoucherType } from "../generated/schema";
 import { Voucher as VoucherTemplate } from "../generated/templates";
 import {
   loadOrCreateAccount,
-  loadOrCreateAsset,
+  loadOrCreateApp,
+  loadOrCreateDataset,
   loadOrCreateVoucherType,
+  loadOrCreateWorkerpool,
 } from "./utils";
 
 export function handleEligibleAssetAdded(event: EligibleAssetAdded): void {
   let voucherTypeId = event.params.id.toString();
   let addedAssetAddress = event.params.asset;
-  let addedAssetId = addedAssetAddress.toHex();
 
-  let asset = loadOrCreateAsset(addedAssetId);
-  // check asset type
-  let voucherHubContract = VoucherHub.bind(event.address);
-  let pocoContract = PoCo.bind(voucherHubContract.getIexecPoco());
-  if (
-    AppRegistry.bind(pocoContract.appregistry()).isRegistered(addedAssetAddress)
-  ) {
-    asset.type = "app";
-  } else if (
-    DatasetRegistry.bind(pocoContract.datasetregistry()).isRegistered(
-      addedAssetAddress
-    )
-  ) {
-    asset.type = "dataset";
-  } else if (
-    WorkerpoolRegistry.bind(pocoContract.workerpoolregistry()).isRegistered(
-      addedAssetAddress
-    )
-  ) {
-    asset.type = "workerpool";
-  }
-  asset.save();
-
-  let voucherType = loadOrCreateVoucherType(voucherTypeId);
-  let eligibleAssets = voucherType.eligibleAssets;
-  let existingEntry = eligibleAssets.indexOf(addedAssetId);
-  // add if not already in list
-  if (existingEntry === -1) {
-    eligibleAssets.push(addedAssetId);
-    voucherType.eligibleAssets = eligibleAssets;
-    voucherType.save();
+  let voucherType = VoucherType.load(voucherTypeId);
+  // do not index changes on non voucherType not indexed
+  if (voucherType) {
+    // check asset type
+    let voucherHubContract = VoucherHub.bind(event.address);
+    let pocoContract = PoCo.bind(voucherHubContract.getIexecPoco());
+    let isRegistredAsset = false;
+    if (
+      AppRegistry.bind(pocoContract.appregistry()).isRegistered(
+        addedAssetAddress
+      )
+    ) {
+      loadOrCreateApp(addedAssetAddress);
+      isRegistredAsset = true;
+    } else if (
+      DatasetRegistry.bind(pocoContract.datasetregistry()).isRegistered(
+        addedAssetAddress
+      )
+    ) {
+      loadOrCreateDataset(addedAssetAddress);
+      isRegistredAsset = true;
+    } else if (
+      WorkerpoolRegistry.bind(pocoContract.workerpoolregistry()).isRegistered(
+        addedAssetAddress
+      )
+    ) {
+      loadOrCreateWorkerpool(addedAssetAddress);
+      isRegistredAsset = true;
+    }
+    // index only apps, datasets and workerpools
+    if (isRegistredAsset) {
+      let addedAssetId = addedAssetAddress.toHex();
+      let eligibleAssets = voucherType.eligibleAssets;
+      let existingEntry = eligibleAssets.indexOf(addedAssetId);
+      // add if not already in list
+      if (existingEntry === -1) {
+        eligibleAssets.push(addedAssetId);
+        voucherType.eligibleAssets = eligibleAssets;
+        voucherType.save();
+      }
+    }
   }
 }
 
 export function handleEligibleAssetRemoved(event: EligibleAssetRemoved): void {
   let voucherTypeId = event.params.id.toString();
-  let removedAssetId = event.params.asset.toHex();
-  loadOrCreateAsset(removedAssetId);
-  let voucherType = loadOrCreateVoucherType(voucherTypeId);
-  let eligibleAssets = voucherType.eligibleAssets;
-  let existingEntry = eligibleAssets.indexOf(removedAssetId);
-  // remove if exists
-  if (existingEntry !== -1) {
-    eligibleAssets.splice(existingEntry);
-    voucherType.eligibleAssets = eligibleAssets;
-    voucherType.save();
+  let voucherType = VoucherType.load(voucherTypeId);
+  // do not index changes on non voucherType not indexed
+  if (voucherType) {
+    let removedAssetId = event.params.asset.toHex();
+    let eligibleAssets = voucherType.eligibleAssets;
+    let existingEntry = eligibleAssets.indexOf(removedAssetId);
+    // remove if exists
+    if (existingEntry !== -1) {
+      eligibleAssets.splice(existingEntry);
+      voucherType.eligibleAssets = eligibleAssets;
+      voucherType.save();
+    }
   }
 }
 
@@ -107,6 +120,7 @@ export function handleVoucherDebited(event: VoucherDebited): void {
   if (voucher) {
     let sponsoredAmount = event.params.sponsoredAmount;
     voucher.balance = voucher.balance.minus(sponsoredAmount);
+    voucher.save();
   }
 }
 

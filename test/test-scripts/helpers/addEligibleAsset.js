@@ -4,7 +4,7 @@ import {
   provider,
   getVoucherManagerWallet,
 } from "./utils.js";
-import { abi } from "../abis/VoucherHub.js";
+import { voucherHubAbi } from "../abis/VoucherHub.js";
 
 export const addEligibleAsset = async ({
   assetAddress = Wallet.createRandom().address,
@@ -14,7 +14,11 @@ export const addEligibleAsset = async ({
     `Adding ${assetAddress} as eligible asset to voucherType ${voucherType}`
   );
   const voucherManagerWallet = await getVoucherManagerWallet();
-  const voucherHubContract = new Contract(VOUCHER_HUB_ADDRESS, abi, provider);
+  const voucherHubContract = new Contract(
+    VOUCHER_HUB_ADDRESS,
+    voucherHubAbi,
+    provider
+  );
   const tx = await voucherHubContract
     .connect(voucherManagerWallet)
     .addEligibleAsset(voucherType, assetAddress);
