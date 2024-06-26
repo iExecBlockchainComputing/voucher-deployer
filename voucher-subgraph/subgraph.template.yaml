@@ -20,6 +20,8 @@ dataSources:
         - Account
         - Voucher
         - VoucherType
+        - VoucherCreation
+        - VoucherTopUp
         - App
         - Dataset
         - Workerpool
@@ -49,6 +51,12 @@ dataSources:
           handler: handleVoucherCreated
         - event: VoucherDebited(indexed address,uint256)
           handler: handleVoucherDebited
+        - event: VoucherDrained(indexed address,uint256)
+          handler: handleVoucherDrained
+        - event: VoucherRefunded(indexed address,uint256)
+          handler: handleVoucherRefunded
+        - event: VoucherToppedUp(indexed address,uint256,uint256)
+          handler: handleVoucherToppedUp
         - event: VoucherTypeCreated(indexed uint256,string,uint256)
           handler: handleVoucherTypeCreated
         - event: VoucherTypeDescriptionUpdated(indexed uint256,string)

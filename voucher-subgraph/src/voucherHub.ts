@@ -3,7 +3,10 @@ import {
   EligibleAssetRemoved,
   VoucherCreated,
   VoucherDebited,
+  VoucherDrained,
   VoucherHub,
+  VoucherRefunded,
+  VoucherToppedUp,
   VoucherTypeCreated,
   VoucherTypeDescriptionUpdated,
   VoucherTypeDurationUpdated,
@@ -12,13 +15,18 @@ import { PoCo } from "../generated/VoucherHub/PoCo";
 import { AppRegistry } from "../generated/VoucherHub/AppRegistry";
 import { DatasetRegistry } from "../generated/VoucherHub/DatasetRegistry";
 import { WorkerpoolRegistry } from "../generated/VoucherHub/WorkerpoolRegistry";
-import { Voucher, VoucherType } from "../generated/schema";
+import {
+  Voucher,
+  VoucherCreation,
+  VoucherTopUp,
+  VoucherType,
+} from "../generated/schema";
 import { Voucher as VoucherTemplate } from "../generated/templates";
 import {
+  getEventId,
   loadOrCreateAccount,
   loadOrCreateApp,
   loadOrCreateDataset,
-  loadOrCreateVoucherType,
   loadOrCreateWorkerpool,
 } from "./utils";
 
@@ -110,6 +118,17 @@ export function handleVoucherCreated(event: VoucherCreated): void {
     voucher.balance = value;
     voucher.expiration = expiration;
     voucher.save();
+
+    // index funding
+    let fundingId = getEventId(event);
+    let voucherCreation = VoucherCreation.load(fundingId);
+    if (!voucherCreation) {
+      voucherCreation = new VoucherCreation(fundingId);
+    }
+    voucherCreation.value = value;
+    voucherCreation.timestamp = event.block.timestamp;
+    voucherCreation.voucher = voucherId;
+    voucherCreation.save();
   }
 }
 
@@ -124,11 +143,62 @@ export function handleVoucherDebited(event: VoucherDebited): void {
   }
 }
 
+export function handleVoucherDrained(event: VoucherDrained): void {
+  let voucherId = event.params.voucher.toHex();
+  let voucher = Voucher.load(voucherId);
+  // do not index balance changes on voucher not indexed
+  if (voucher) {
+    let drainedAmount = event.params.amount;
+    voucher.balance = voucher.balance.minus(drainedAmount);
+    voucher.save();
+  }
+}
+
+export function handleVoucherRefunded(event: VoucherRefunded): void {
+  let voucherId = event.params.voucher.toHex();
+  let voucher = Voucher.load(voucherId);
+  // do not index balance changes on voucher not indexed
+  if (voucher) {
+    let refundedAmount = event.params.amount;
+    voucher.balance = voucher.balance.plus(refundedAmount);
+    voucher.save();
+  }
+}
+
+export function handleVoucherToppedUp(event: VoucherToppedUp): void {
+  let voucherId = event.params.voucher.toHex();
+  let voucher = Voucher.load(voucherId);
+  // do not index balance changes on voucher not indexed
+  if (voucher) {
+    let topUpValue = event.params.value;
+    let topUpExpiration = event.params.expiration;
+    voucher.value = topUpValue;
+    voucher.balance = voucher.balance.plus(topUpValue);
+    voucher.expiration = topUpExpiration;
+    voucher.save();
+
+    // index funding
+    let fundingId = getEventId(event);
+    let voucherTopUp = VoucherTopUp.load(fundingId);
+    if (!voucherTopUp) {
+      voucherTopUp = new VoucherTopUp(fundingId);
+    }
+    voucherTopUp.value = topUpValue;
+    voucherTopUp.timestamp = event.block.timestamp;
+    voucherTopUp.voucher = voucherId;
+    voucherTopUp.save();
+  }
+}
+
 export function handleVoucherTypeCreated(event: VoucherTypeCreated): void {
   let id = event.params.id.toString();
   let description = event.params.description;
   let duration = event.params.duration;
-  let voucherType = loadOrCreateVoucherType(id);
+  let voucherType = VoucherType.load(id);
+  if (!voucherType) {
+    voucherType = new VoucherType(id);
+    voucherType.eligibleAssets = [];
+  }
   voucherType.description = description;
   voucherType.duration = duration;
   voucherType.save();
@@ -139,9 +209,12 @@ export function handleVoucherTypeDescriptionUpdated(
 ): void {
   let id = event.params.id.toString();
   let description = event.params.description;
-  let voucherType = loadOrCreateVoucherType(id);
-  voucherType.description = description;
-  voucherType.save();
+  let voucherType = VoucherType.load(id);
+  // do not index changes on non voucherType not indexed
+  if (voucherType) {
+    voucherType.description = description;
+    voucherType.save();
+  }
 }
 
 export function handleVoucherTypeDurationUpdated(
@@ -149,7 +222,10 @@ export function handleVoucherTypeDurationUpdated(
 ): void {
   let id = event.params.id.toString();
   let duration = event.params.duration;
-  let voucherType = loadOrCreateVoucherType(id);
-  voucherType.duration = duration;
-  voucherType.save();
+  let voucherType = VoucherType.load(id);
+  // do not index changes on non voucherType not indexed
+  if (voucherType) {
+    voucherType.duration = duration;
+    voucherType.save();
+  }
 }

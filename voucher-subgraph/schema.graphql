@@ -16,10 +16,32 @@ type Voucher @entity {
   owner: Account!
   expiration: BigInt!
   voucherType: VoucherType!
-  value: BigInt!
+  value: BigInt! # last funding value
   balance: BigInt!
   authorizedAccounts: [Account!]!
+  fundings: [VoucherFunding!]! @derivedFrom(field: "voucher")
   deals: [Deal!]! @derivedFrom(field: "sponsor")
+}
+
+interface VoucherFunding {
+  id: ID!
+  timestamp: BigInt!
+  value: BigInt!
+  voucher: Voucher!
+}
+
+type VoucherCreation implements VoucherFunding @entity {
+  id: ID!
+  timestamp: BigInt!
+  value: BigInt!
+  voucher: Voucher!
+}
+
+type VoucherTopUp implements VoucherFunding @entity {
+  id: ID!
+  timestamp: BigInt!
+  value: BigInt!
+  voucher: Voucher!
 }
 
 # common interface for all sponsored assets
