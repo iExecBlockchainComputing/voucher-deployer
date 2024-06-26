@@ -6,7 +6,7 @@ import {
 } from "./utils.js";
 import { voucherHubAbi } from "../abis/VoucherHub.js";
 
-export const drainUsersVoucher = async ({ ownerAddress, value = 1000 }) => {
+export const drainUsersVoucher = async ({ ownerAddress}) => {
   if (!ownerAddress) {
     throw Error("missing ownerAddress");
   }
