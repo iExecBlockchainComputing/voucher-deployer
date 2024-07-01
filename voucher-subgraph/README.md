@@ -5,7 +5,6 @@ A subgraph indexing `iexec-voucher-contracts`
 NB:
 
 - :warning: [`iexec-voucher-contracts`](https://github.com/iExecBlockchainComputing/iexec-voucher-contracts) is still under development, run `refresh-abis.sh` to get the latest ABI changes from the `develop` branch.
-- :warning: events are not yet handled, at this time the subgraph only expose the gql interface to work with.
 
 ## build
 
