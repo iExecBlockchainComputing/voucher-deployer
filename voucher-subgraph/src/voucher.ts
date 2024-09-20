@@ -5,6 +5,7 @@ import {
   AccountAuthorized,
   AccountUnauthorized,
   OrdersMatchedWithVoucher,
+  TaskClaimedWithVoucher
 } from "../generated/templates/Voucher/Voucher";
 import { Deal, Voucher } from "../generated/schema";
 import {
@@ -102,4 +103,14 @@ export function handleOrdersMatchedWithVoucher(
       deal.save();
     }
   }
+}
+
+export function handleTaskClaimedWithVoucher(
+  event: TaskClaimedWithVoucher
+): void {
+  let taskId = event.params.taskId.toHex();
+
+  // const deal = getDealFromTaskId(taskId);
+  // deal.sponsoredAmount = deal.sponsoredAmount.minus(...)
+  // deal.save();
 }

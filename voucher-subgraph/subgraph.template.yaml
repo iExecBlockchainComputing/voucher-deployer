@@ -109,4 +109,6 @@ templates:
           handler: handleAccountUnauthorized
         - event: OrdersMatchedWithVoucher(bytes32)
           handler: handleOrdersMatchedWithVoucher
+        - event: TaskClaimedWithVoucher(bytes32)
+          handler: handleTaskClaimedWithVoucher
       file: ./src/voucher.ts
