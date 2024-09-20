@@ -75,7 +75,8 @@ type Workerpool implements Asset @entity {
 type Deal @entity {
   id: ID!
   sponsor: Voucher # voucher specific
-  sponsoredAmount: BigInt # voucher specific
+  initialSponsoredAmount: BigInt # voucher specific
+  sponsoredAmount: BigInt # voucher specific. Might be less that initialSponsoredAmount in case of a claimed task
   timestamp: BigInt!
   requester: Account!
   app: App!

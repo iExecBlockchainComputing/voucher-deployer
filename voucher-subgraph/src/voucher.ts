@@ -70,6 +70,7 @@ export function handleOrdersMatchedWithVoucher(
       let deal = new Deal(dealId);
       deal.timestamp = event.block.timestamp;
       deal.sponsor = voucherId;
+      deal.initialSponsoredAmount = sponsoredAmount;
       deal.sponsoredAmount = sponsoredAmount;
 
       let pocoDeal = pocoContract.viewDeal(event.params.dealId);
