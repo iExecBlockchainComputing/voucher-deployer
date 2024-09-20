@@ -1,6 +1,6 @@
 # Voucher deployer
 
-This project allow deploying iExec voucher related contracts and associated subgraph on a bellecour forked test chain (anvil).
+This project allows deploying iExec voucher related contracts and associated subgraph on a bellecour forked test chain (anvil).
 
 ## Build
 
