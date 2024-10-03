@@ -94,6 +94,7 @@ services:
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
       SKIP_SUBGRAPH: $SKIP_SUBGRAPH
+      FORCE_POCO_UPGRADE: $FORCE_POCO_UPGRADE
     volumes:
       - ./out:/app/out
     depends_on:
