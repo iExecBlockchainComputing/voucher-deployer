@@ -124,6 +124,7 @@ steps:
       RPC_URL: http://bellecour-fork:8545
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
+      FORCE_POCO_UPGRADE: true
     commands:
       - sh /app/entrypoint.sh
     depends_on:
