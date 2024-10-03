@@ -19,6 +19,7 @@ Prerequisites:
 Environments:
 
 - `RPC_URL`: `bellecour-fork` RPC url
+- `FORCE_POCO_UPGRADE`: boolean set it to `true` to force the PoCo upgrade, use this to test next PoCo version (default `false`)
 - `SKIP_SUBGRAPH`: boolean set it to `true` to disable the subgraph deployment (default `false`)
 - `GRAPHNODE_URL`: `graphnode` admin url
 - `IPFS_URL`: `ipfs` admin url
