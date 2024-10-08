@@ -3,8 +3,12 @@
   "type": "module",
   "description": "This project allow deploying iExec voucher related contracts and associated subgraph on a bellecour forked test chain (anvil).",
   "scripts": {
+    "build": "docker build . --no-cache -t voucher-deployer",
     "test": "npm run start-test-stack && docker logs -f test-voucher-deployer-1",
+    "test-force-poco-upgrade": "FORCE_POCO_UPGRADE=true npm run start-test-stack && docker logs -f test-voucher-deployer-1",
+    "test-skip-voucher": "VOUCHER_HUB_ADDRESS=0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda VOUCHER_HUB_START_BLOCK=30306387 npm run start-test-stack && docker logs -f test-voucher-deployer-1",
+    "test-skip-subgraph": "SKIP_SUBGRAPH=true npm run start-test-stack && docker logs -f test-voucher-deployer-1",
     "stop-test-stack": "cd test && docker compose down --remove-orphans --volumes",
-    "start-test-stack": "cd test && npm run stop-test-stack && node prepare-test-env.js && docker compose build --no-cache && docker compose up -d"
+    "start-test-stack": "cd test && npm run stop-test-stack && node prepare-test-env.js && docker compose build && docker compose up -d"
   }
 }
