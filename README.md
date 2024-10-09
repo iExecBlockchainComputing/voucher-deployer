@@ -20,6 +20,8 @@ Environments:
 
 - `RPC_URL`: `bellecour-fork` RPC url
 - `FORCE_POCO_UPGRADE`: boolean set it to `true` to force the PoCo upgrade, use this to test next PoCo version (default `false`)
+- `VOUCHER_HUB_ADDRESS`: address of an already deployed `VoucherHub`, if set along with `VOUCHER_HUB_START_BLOCK` skips `VoucherHub` deployment (default unset)
+- `VOUCHER_HUB_START_BLOCK`: number of the block to start indexing `VoucherHub`, if set along with `VOUCHER_HUB_ADDRESS` skips `VoucherHub` deployment (default unset)
 - `SKIP_SUBGRAPH`: boolean set it to `true` to disable the subgraph deployment (default `false`)
 - `GRAPHNODE_URL`: `graphnode` admin url
 - `IPFS_URL`: `ipfs` admin url
@@ -35,10 +37,12 @@ docker run --rm \
 
 Output:
 
-- `iexec-voucher-contracts.git-log`: git logs iexec-voucher-contracts
-- `PoCo.git-log`: git logs PoCo
-- `VoucherHub.address`: address of the deployed VoucherHub contract
-- `VoucherHub.block`: block number of VoucherHub contract deployment
+- when `FORCE_POCO_UPGRADE` is true (deploy PoCo upgrade)
+  - `PoCo.git-log`: git logs PoCo
+- when `VOUCHER_HUB_ADDRESS` or `VOUCHER_HUB_START_BLOCK` is not set (deploy VoucherHub)
+  - `iexec-voucher-contracts.git-log`: git logs iexec-voucher-contracts
+  - `VoucherHub.address`: address of the deployed VoucherHub contract
+  - `VoucherHub.block`: block number of VoucherHub contract deployment
 
 ## Test
 
