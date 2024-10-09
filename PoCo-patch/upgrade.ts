@@ -209,9 +209,17 @@ const main = async () => {
       module.bytecode,
       salt
     );
-    await genericFactoryInstance
-      .createContract(module.bytecode, salt)
-      .then((tx) => tx.wait());
+
+    // avoid repeating deployment (would fail via factory)
+    const addressBytecode = await ethers.provider.getCode(moduleAddress);
+    if (addressBytecode == "0x") {
+      await genericFactoryInstance
+        .createContract(module.bytecode, salt)
+        .then((tx) => tx.wait());
+    } else {
+      console.log("⚠️ module already deployed, skipping deployment ⚠️");
+    }
+
     console.log(`${module.name} deployed at ${moduleAddress}`);
 
     // Link modules into the factory
